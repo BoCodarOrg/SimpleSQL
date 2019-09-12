@@ -6,11 +6,15 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.sql.annotations.AutoIncrement;
 import br.com.sql.annotations.Column;
+import br.com.sql.annotations.ForeignKey;
 import br.com.sql.annotations.Key;
 import br.com.sql.annotations.Table;
+import br.com.sql.tabelas.Pessoa;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,13 +27,7 @@ public class MainActivity extends AppCompatActivity {
         pessoa.setNome("Paulo Iury");
         pessoa.setIdade(18);
         String sql = "";
-
-        try {
-            sql = SQL.create(pessoa);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
-
+        sql = SQL.create(pessoa);
         int size = pessoa.getClass().getDeclaredFields().length;
         Toast.makeText(this, sql, Toast.LENGTH_SHORT).show();
         Toast.makeText(this, String.valueOf(size), Toast.LENGTH_LONG).show();
@@ -38,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static class SQL {
 
-        public static String create(Object obj) throws Throwable {
+        public static String create(Object obj) {
             Table persistable =
                     obj.getClass().getAnnotation(Table.class);
             String columns = "";
@@ -46,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 String tabela = obj.getClass().getSimpleName();
                 Field[] fields = obj.getClass().getDeclaredFields();
                 int count = 0;
+                List<Field> foreignKeys = new ArrayList<>();
                 for (Field field : fields) {
                     // como os atributos são private,
                     // setamos ele como visible
@@ -54,19 +53,26 @@ public class MainActivity extends AppCompatActivity {
                     Column column =
                             field.getAnnotation(Column.class);
                     if (column != null) {
-                        columns += checkAnnotations(field,column.non_null());
                         if (count == 0) {
                             columns += field.getName();
                         } else {
                             columns += " , " + field.getName();
                         }
+                        columns += checkAnnotations(field, column.non_null());
+                        if (field.isAnnotationPresent(ForeignKey.class))
+                            foreignKeys.add(field);
                     }
                     count++;
                 }
-
-                return "CREATE TABLE " + tabela + "("
-                        + columns +
-                        ");";
+                String sql = "CREATE TABLE " + tabela + " ( "
+                        + columns;
+                for (Field key : foreignKeys) {
+                    ForeignKey foreignKey = key.getAnnotation(ForeignKey.class);
+                    sql += ",FOREIGN KEY (" + key.getName() + ")" +
+                            " REFERENCES " + foreignKey.reference().getSimpleName() + "(" +key.getName()+ ")";
+                }
+                sql += ");";
+                return sql;
             }
             return "";
         }
@@ -103,14 +109,15 @@ public class MainActivity extends AppCompatActivity {
             return "";
         }
 
-        private static String checkAnnotations(Field c,boolean not_null) {
+        private static String checkAnnotations(Field c, boolean not_null) {
             String annotations = "";
             if (c.isAnnotationPresent(AutoIncrement.class))
-                annotations += "AUTO_INCREMENT";
+                annotations += " AUTOINCREMENT";
             if (c.isAnnotationPresent(Key.class))
-                annotations += "PRIMARY KEY";
+                annotations += " PRIMARY KEY";
             if (not_null)
-                annotations += "NOT_NULL";
+                annotations += " NOT_NULL";
+
             return annotations;
         }
     }
