@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Column {
-    String type();
-    boolean non_null() default false;
+public @interface ForeignKey {
+    Class<?> reference();
 }
