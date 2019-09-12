@@ -30,6 +30,17 @@ public class MainActivity extends AppCompatActivity {
             throwable.printStackTrace();
         }
 
+        new SampleSql.Select()
+                .table("Pessoa")
+                .fields(new String[]{"*"})
+                .where()
+                .fieldString("id")
+                .equals()
+                .fieldInt(1)
+                .execute();
+
+        SampleSql.mountFields(new String[]{"1","2","3"});
+
         int size = pessoa.getClass().getDeclaredFields().length;
         Toast.makeText(this, sql, Toast.LENGTH_SHORT).show();
         Toast.makeText(this, String.valueOf(size), Toast.LENGTH_LONG).show();
