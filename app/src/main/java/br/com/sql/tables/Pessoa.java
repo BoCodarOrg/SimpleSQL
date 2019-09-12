@@ -1,4 +1,4 @@
-package br.com.sql.tabelas;
+package br.com.sql.tables;
 
 import br.com.sql.annotations.AutoIncrement;
 import br.com.sql.annotations.Column;
@@ -8,14 +8,16 @@ import br.com.sql.annotations.Table;
 
 @Table
 public class Pessoa {
-    @Column
+    @Column(type = "INT")
     @AutoIncrement()
     @Key
     private int id;
-    @Column(non_null = true)
+    @Column(type = "TEXT",
+            non_null = true)
     private String nome;
     @ForeignKey(reference = Loja.class)
-    @Column(non_null = true)
+    @Column(type = "INT"
+            ,non_null = true)
     private int idade;
 
     public int getId() {

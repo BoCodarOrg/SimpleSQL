@@ -1,4 +1,4 @@
-package br.com.sql.tabelas;
+package br.com.sql.tables;
 
 import br.com.sql.annotations.Table;
 
