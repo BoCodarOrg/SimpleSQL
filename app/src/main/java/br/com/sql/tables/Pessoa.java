@@ -8,7 +8,7 @@ import br.com.sql.annotations.Table;
 
 @Table
 public class Pessoa {
-    @Column(type = "INT")
+    @Column(type = "INTEGER")
     @AutoIncrement()
     @Key
     private int id;
@@ -16,7 +16,7 @@ public class Pessoa {
             non_null = true)
     private String nome;
     @ForeignKey(reference = Loja.class)
-    @Column(type = "INT"
+    @Column(type = "INTEGER"
             ,non_null = true)
     private int idade;
 

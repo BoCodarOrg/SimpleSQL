@@ -1,8 +1,17 @@
 package br.com.sql.config;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
+
+import com.google.gson.Gson;
+
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import br.com.sql.tables.Pessoa;
@@ -11,6 +20,12 @@ import br.com.sql.tables.Pessoa;
  * Developed by Lucas Nascimento
  */
 public class SampleSQL {
+    HelperBD helperBD;
+
+    public SampleSQL(Context context){
+        helperBD = new HelperBD(context);
+    }
+
     public Select selectTable(Object typeObject) {
         return new Select(typeObject);
     }
@@ -29,8 +44,8 @@ public class SampleSQL {
 
 
         public Select(Object typeObject) {
-            this.tableName = ((Class) typeObject).getSimpleName();
-            this.typeObject = typeObject.getClass().getDeclaredFields();
+            this.tableName = typeObject.getClass().getSimpleName();
+            this.typeObject = typeObject;
             SQLString = "SELECT ";
         }
 
@@ -121,17 +136,52 @@ public class SampleSQL {
             return this;
         }
 
-        public <typeObject> List<typeObject> execute() {
+        public List execute() {
+            SQLiteDatabase read = helperBD.getReadableDatabase();
             SQLString = SQLString + ";";
+            List  lstClasses = new ArrayList<>();
+            Field[] fields = typeObject.getClass().getDeclaredFields();
+            HashMap<String,Object> hashMap = new HashMap<>();
+
+            try {
+                Cursor cursor = read.rawQuery(SQLString, null);
+                while (cursor.moveToNext()) {
+                    for(Field f:fields){
+                        Object object = checkItem(cursor,f.getName());
+                        hashMap.put(f.getName(),object);
+                    }
+                    String hashJson = new Gson().toJson(hashMap);
+                    lstClasses.add(new Gson().fromJson(hashJson, (Type) typeObject.getClass()));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             /**
              * Busca no banco de dados
              * */
-            List<typeObject> lstClasses = new ArrayList<>();
-            lstClasses.add((typeObject) new Pessoa());
 
             return lstClasses;
         }
 
+        private Object checkItem(Cursor cursor,String name){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                if(cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_INTEGER ){
+                    return cursor.getInt(cursor.getColumnIndex(name));
+                }else if(cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_FLOAT){
+                    return cursor.getFloat(cursor.getColumnIndex(name));
+                }else if(cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_STRING){
+                    return cursor.getString(cursor.getColumnIndex(name));
+                }else if(cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_BLOB){
+                    return cursor.getBlob(cursor.getColumnIndex(name));
+                }else if(cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_NULL){
+                    return null;
+                }else{
+                    return null;
+                }
+            }else{
+                return null;
+            }
+        }
     }
 
     private static String getFields(String[] args) {
