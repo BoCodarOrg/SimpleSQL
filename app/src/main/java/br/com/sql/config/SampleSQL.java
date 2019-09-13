@@ -150,8 +150,8 @@ public class SampleSQL {
         String columns = "";
         if (persistable != null) {
             String tabela = obj.getClass().getSimpleName();
-            Field[] fields = obj.getClass().getDeclaredFields();
-            int count = 0;
+                Field[] fields = obj.getClass().getDeclaredFields();
+                int count = 0;
             List<Field> foreignKeys = new ArrayList<>();
             for (Field field : fields) {
                 // como os atributos são private,
