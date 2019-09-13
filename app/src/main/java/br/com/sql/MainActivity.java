@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import br.com.sql.config.SQL;
 import br.com.sql.config.SampleSQL;
 import br.com.sql.tables.Pessoa;
 
