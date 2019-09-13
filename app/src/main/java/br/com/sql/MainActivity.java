@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import br.com.sql.config.SQL;
+import br.com.sql.config.SampleSQL;
 import br.com.sql.tables.Pessoa;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,26 +26,12 @@ public class MainActivity extends AppCompatActivity {
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
-
-        new SampleSql.Select("Pessoa")
-                .fields(new String[]{"nome,idade,TOP"})
-                .where()
-                .collumn("id")
-                .equals()
-                .fieldFloat(0)
-                .and()
-                .collumn("data")
-                .between()
-                .fieldLong(10403000)
-                .and()
-                .fieldLong(10239934)
-                .or()
-                .collumn("idade")
-                .writeSQL(">=")
-                .fieldInt(10)
+        SampleSQL sampleSql = new SampleSQL();
+        sampleSql.selectTable(Pessoa.class)
+                .fields(new String[]{"nome","idade"})
                 .execute();
 
-//        SampleSql.mountFields(new String[]{"1","2","3"});
+
 
         int size = pessoa.getClass().getDeclaredFields().length;
         Toast.makeText(this, sql, Toast.LENGTH_SHORT).show();

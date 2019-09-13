@@ -1,20 +1,26 @@
-package br.com.sql;
+package br.com.sql.config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-public class SampleSql {
+public class SampleSQL {
+    public Select selectTable(Class classes) {
+        return new Select(classes);
+    }
 
-    static class Select {
+    public class Select {
         private String tableName, field, writeSQL, collumn;
         private String[] fields;
         private boolean where, equals, between, or, and, like;
         private Object value;
         private String SQLString;
+        private Class classes;
 
 
-
-        public Select(String name) {
-            this.tableName = name;
+        public Select(Class classes) {
+            this.tableName = classes.getSimpleName();
+            this.classes = classes;
             SQLString = "SELECT ";
         }
 
@@ -25,7 +31,7 @@ public class SampleSql {
             return this;
         }
 
-        public SampleSql.Select fields(String[] fields) {
+        public SampleSQL.Select fields(String[] fields) {
             this.fields = fields;
             SQLString = SQLString + getFields(fields) + " FROM " + tableName;
             return this;
@@ -105,8 +111,14 @@ public class SampleSql {
             return this;
         }
 
-        public SampleSql execute() {
-            return new SampleSql(this);
+        public List<Class<?>> execute() {
+            SQLString = SQLString+";";
+
+            /**
+             * Aqui executa a String SQL (SQLString) para fazer o select, e retorna um List
+             * */
+            List<Class<?>> list = new ArrayList<>();
+            return list;
         }
 
     }
@@ -116,7 +128,4 @@ public class SampleSql {
     }
 
 
-    public SampleSql(Select select) {
-
-    }
 }
