@@ -26,16 +26,25 @@ public class MainActivity extends AppCompatActivity {
             throwable.printStackTrace();
         }
 
-        new SampleSql.Select()
-                .table("Pessoa")
-                .fields(new String[]{"*"})
+        new SampleSql.Select("Pessoa")
+                .fields(new String[]{"nome,idade,TOP"})
                 .where()
-                .fieldString("id")
+                .collumn("id")
                 .equals()
-                .fieldInt(1)
+                .fieldFloat(0)
+                .and()
+                .collumn("data")
+                .between()
+                .fieldLong(10403000)
+                .and()
+                .fieldLong(10239934)
+                .or()
+                .collumn("idade")
+                .writeSQL(">=")
+                .fieldInt(10)
                 .execute();
 
-        SampleSql.mountFields(new String[]{"1","2","3"});
+//        SampleSql.mountFields(new String[]{"1","2","3"});
 
         int size = pessoa.getClass().getDeclaredFields().length;
         Toast.makeText(this, sql, Toast.LENGTH_SHORT).show();
