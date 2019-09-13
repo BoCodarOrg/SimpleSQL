@@ -1,26 +1,36 @@
 package br.com.sql.config;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import br.com.sql.tables.Pessoa;
+
+/**
+ * Developed by Lucas Nascimento
+ */
 public class SampleSQL {
-    public Select selectTable(Class classes) {
-        return new Select(classes);
+    public Select selectTable(Object typeObject) {
+        return new Select(typeObject);
     }
 
+    /**
+     * Developed by Lucas Nascimento
+     * Method SELECT
+     */
     public class Select {
         private String tableName, field, writeSQL, collumn;
         private String[] fields;
         private boolean where, equals, between, or, and, like;
         private Object value;
         private String SQLString;
-        private Class classes;
+        private Object typeObject;
 
 
-        public Select(Class classes) {
-            this.tableName = classes.getSimpleName();
-            this.classes = classes;
+        public Select(Object typeObject) {
+            this.tableName = ((Class) typeObject).getSimpleName();
+            this.typeObject = typeObject.getClass().getDeclaredFields();
             SQLString = "SELECT ";
         }
 
@@ -111,14 +121,15 @@ public class SampleSQL {
             return this;
         }
 
-        public List<Class<?>> execute() {
-            SQLString = SQLString+";";
-
+        public <typeObject> List<typeObject> execute() {
+            SQLString = SQLString + ";";
             /**
-             * Aqui executa a String SQL (SQLString) para fazer o select, e retorna um List
+             * Busca no banco de dados
              * */
-            List<Class<?>> list = new ArrayList<>();
-            return list;
+            List<typeObject> lstClasses = new ArrayList<>();
+            lstClasses.add((typeObject) new Pessoa());
+
+            return lstClasses;
         }
 
     }
