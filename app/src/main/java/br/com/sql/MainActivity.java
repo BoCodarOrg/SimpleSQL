@@ -20,8 +20,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         try {
             SampleSQL.create(new Pessoa());
+//            SampleSQL.insert(new Pessoa());
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
         }
     }
 }
