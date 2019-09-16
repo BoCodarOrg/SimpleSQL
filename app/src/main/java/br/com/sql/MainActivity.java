@@ -23,11 +23,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Pessoa p = new Pessoa();
-        p.setNome("\"Alow\"");
+        p.setNome("Alow");
         p.setIdade(12);
         boolean result = false;
         try {
-            result = SampleSQL.insert(p, this);
+            result = new SampleSQL(this).insert(p);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
@@ -35,8 +35,16 @@ public class MainActivity extends AppCompatActivity {
 
         SampleSQL sampleSql = new SampleSQL(this);
         List<Pessoa> pessoa2 = sampleSql.selectTable(new Pessoa())
+                .where()
+                .equals()
                 .fields(new String[]{"*"})
                 .execute();
 
+        sampleSql.deleteColumn(new Pessoa())
+                .where()
+                .field("id")
+                .equals()
+                .fieldInt(1)
+                .execute();
     }
 }

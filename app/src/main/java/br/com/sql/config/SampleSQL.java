@@ -26,7 +26,7 @@ import br.com.sql.annotations.Table;
  * Developed by Lucas Nascimento
  */
 public class SampleSQL {
-    HelperBD helperBD;
+    private static HelperBD helperBD;
 
     public SampleSQL(Context context) {
         helperBD = new HelperBD(context);
@@ -35,6 +35,11 @@ public class SampleSQL {
     public Select selectTable(Object typeObject) {
         return new Select(typeObject);
     }
+
+    public DeleteColumn deleteColumn(Object o) {
+        return new DeleteColumn(o);
+    }
+
 
     /**
      * Developed by Lucas Nascimento
@@ -70,7 +75,7 @@ public class SampleSQL {
 
         public Select fieldString(String value) {
             this.field = field;
-            SQLString = SQLString + field;
+            SQLString = SQLString + value;
             return this;
         }
 
@@ -238,12 +243,11 @@ public class SampleSQL {
             throw new SQLException("This class does not have the table annotation");
     }
 
-    public static boolean insert(Object obj, Context context) throws Throwable {
-        SQLiteDatabase write = new HelperBD(context).getReadableDatabase();
+    public static boolean insert(Object obj) throws Throwable {
+        SQLiteDatabase write = helperBD.getReadableDatabase();
         ContentValues values = new ContentValues();
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
-
         if (persistable != null) {
             Field[] fields = obj.getClass().getDeclaredFields();
             for (Field field : fields) {
@@ -252,8 +256,10 @@ public class SampleSQL {
                 field.setAccessible(true);
                 // Se o atributo tem a anotação
                 if (field.isAnnotationPresent(Column.class)) {
-                    if (!field.isAnnotationPresent(AutoIncrement.class))
-                        values.put(field.getName(), field.get(obj).toString());
+                    if (!field.isAnnotationPresent(AutoIncrement.class)) {
+                        String value = checkObject(field.get(obj));
+                        values.put(field.getName(), value);
+                    }
                 } else
                     throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
             }
@@ -263,6 +269,11 @@ public class SampleSQL {
             throw new SQLException("This class does not have the table annotation");
     }
 
+    private static String checkObject(Object o) {
+        if (o instanceof String)
+            return "\"" + o.toString() + "\"";
+        return o.toString();
+    }
 
     private static String checkAnnotations(Field c, boolean not_null) {
         String annotations = "";
@@ -279,11 +290,81 @@ public class SampleSQL {
     public static String deleteTable(Object obj) throws SQLException {
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
-        String columns = "";
         if (persistable != null) {
             return "DROP TABLE IF EXISTS " + obj.getClass().getSimpleName();
         } else
             throw new SQLException("This class does not have the table annotation");
 
     }
+
+    public class DeleteColumn {
+        private String table, SQLString;
+
+        public DeleteColumn(Object o) {
+            this.table = o.getClass().getSimpleName();
+            this.SQLString = "";
+        }
+
+        public DeleteColumn equals() {
+            SQLString = SQLString + " = ";
+            return this;
+        }
+
+        public DeleteColumn where() {
+            SQLString = SQLString + " WHERE ";
+            return this;
+        }
+
+        public DeleteColumn and() {
+            SQLString = SQLString + " AND ";
+            return this;
+        }
+
+        public DeleteColumn or() {
+            SQLString = SQLString + " OR ";
+            return this;
+        }
+
+        public DeleteColumn fieldString(String value) {
+            SQLString += value;
+            return this;
+        }
+
+        public DeleteColumn fieldInt(int value) {
+            SQLString += value;
+            return this;
+        }
+
+        public DeleteColumn fieldLong(long value) {
+            SQLString += value;
+            return this;
+        }
+
+        public DeleteColumn fieldFloat(int value) {
+            SQLString += value;
+            return this;
+        }
+
+        public DeleteColumn fieldBoolean(int value) {
+            SQLString += value;
+            return this;
+        }
+
+        public DeleteColumn field(String field) {
+            SQLString += field;
+            return this;
+        }
+
+
+        public boolean execute() {
+            SQLiteDatabase escrever = helperBD.getWritableDatabase();
+            try {
+                escrever.execSQL("DELETE FROM " + table + " " + SQLString);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+    }
+
 }

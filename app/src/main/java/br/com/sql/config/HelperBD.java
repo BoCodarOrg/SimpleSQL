@@ -12,7 +12,7 @@ import br.com.sql.tables.Pessoa;
  * Copyright (c) 2019 GFX Consultoria
  */
 public class HelperBD extends SQLiteOpenHelper {
-    static final int DATABASE_VERSION = 2;
+    static final int DATABASE_VERSION = 5;
     static final String DATABASE_NAME = "example.db";
     Context context;
 
