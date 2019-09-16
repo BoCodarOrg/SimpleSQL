@@ -8,15 +8,15 @@ import br.com.sql.annotations.Table;
 
 @Table
 public class Pessoa {
-    @Column(type = "INT")
+    @Column(type = "INTEGER")
     @AutoIncrement()
     @Key
     private int id;
     @Column(type = "TEXT",
             non_null = true)
     private String nome;
-    @ForeignKey(reference = Loja.class)
-    @Column(type = "INT"
+//    @ForeignKey(reference = Loja.class)
+    @Column(type = "INTEGER"
             ,non_null = true)
     private int idade;
 
