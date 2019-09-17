@@ -265,7 +265,7 @@ public class SampleSQL {
                 // Se o atributo tem a anotação
                 if (field.isAnnotationPresent(Column.class)) {
                     if (!field.isAnnotationPresent(AutoIncrement.class)) {
-                        String value = checkObject(field.get(obj));
+                        String value = field.get(obj).toString();
                         values.put(field.getName(), value);
                     }
                 } else
@@ -276,19 +276,12 @@ public class SampleSQL {
         } else
             throw new SQLException("This class does not have the table annotation");
     }
-
-    private static String checkObject(Object o) {
-        if (o instanceof String)
-            return "\"" + o.toString() + "\"";
-        return o.toString();
-    }
-
     private static String checkAnnotations(Field c, boolean not_null) {
         String annotations = "";
-        if (c.isAnnotationPresent(AutoIncrement.class))
-            annotations += " AUTOINCREMENT";
         if (c.isAnnotationPresent(Key.class))
             annotations += " PRIMARY KEY";
+        if (c.isAnnotationPresent(AutoIncrement.class))
+            annotations += " AUTOINCREMENT";
         if (not_null && !c.isAnnotationPresent(Key.class))
             annotations += " NOT NULL";
 

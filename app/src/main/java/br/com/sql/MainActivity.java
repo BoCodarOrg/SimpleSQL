@@ -35,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
         SampleSQL sampleSql = new SampleSQL(new HelperBD(this));
         List<Pessoa> pessoa2 = sampleSql.selectTable(new Pessoa())
-                .where()
-                .equals()
                 .fields(new String[]{"*"})
                 .execute();
 
