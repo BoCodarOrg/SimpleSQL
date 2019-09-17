@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 
 import com.google.gson.Gson;
@@ -26,10 +27,10 @@ import br.com.sql.annotations.Table;
  * Developed by Lucas Nascimento
  */
 public class SampleSQL {
-    private static HelperBD helperBD;
+    private static SQLiteOpenHelper helperBD;
 
-    public SampleSQL(Context context) {
-        helperBD = new HelperBD(context);
+    public SampleSQL(SQLiteOpenHelper helperBD) {
+        this.helperBD = helperBD;
     }
 
     public Select selectTable(Object typeObject) {
@@ -199,6 +200,10 @@ public class SampleSQL {
         return Arrays.toString(args).replace("[", "").replace("]", "");
     }
 
+    /**
+     * Developed by Paulo Iury
+     * Method CREATE TABLE
+     */
     public static String create(Object obj) throws SQLException {
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
@@ -242,7 +247,10 @@ public class SampleSQL {
         } else
             throw new SQLException("This class does not have the table annotation");
     }
-
+    /**
+     * Developed by Paulo Iury
+     * Method INSERT
+     */
     public static boolean insert(Object obj) throws Throwable {
         SQLiteDatabase write = helperBD.getReadableDatabase();
         ContentValues values = new ContentValues();
@@ -287,6 +295,10 @@ public class SampleSQL {
         return annotations;
     }
 
+    /**
+     * Developed by Paulo Iury
+     * Method DELETE TABLE
+     */
     public static String deleteTable(Object obj) throws SQLException {
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
@@ -297,6 +309,10 @@ public class SampleSQL {
 
     }
 
+    /**
+     * Developed by Paulo Iury
+     * Method DELETE COLUMN
+     */
     public class DeleteColumn {
         private String table, SQLString;
 

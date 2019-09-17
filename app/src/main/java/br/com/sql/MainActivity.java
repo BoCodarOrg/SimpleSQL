@@ -27,13 +27,13 @@ public class MainActivity extends AppCompatActivity {
         p.setIdade(12);
         boolean result = false;
         try {
-            result = new SampleSQL(this).insert(p);
+            result = new SampleSQL(new HelperBD(this)).insert(p);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
 
 
-        SampleSQL sampleSql = new SampleSQL(this);
+        SampleSQL sampleSql = new SampleSQL(new HelperBD(this));
         List<Pessoa> pessoa2 = sampleSql.selectTable(new Pessoa())
                 .where()
                 .equals()
