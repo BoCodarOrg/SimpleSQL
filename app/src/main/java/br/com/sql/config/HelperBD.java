@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
+import java.sql.SQLException;
+
 import br.com.sql.tables.Pessoa;
 
 /**
@@ -12,7 +14,7 @@ import br.com.sql.tables.Pessoa;
  * Copyright (c) 2019 GFX Consultoria
  */
 public class HelperBD extends SQLiteOpenHelper {
-    static final int DATABASE_VERSION = 1;
+    static final int DATABASE_VERSION = 7;
     static final String DATABASE_NAME = "example.db";
     Context context;
     public HelperBD(Context context) {
@@ -32,7 +34,11 @@ public class HelperBD extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-//        SQL.deleleTable(Pessoa.class);
+        try {
+            SQL.deleteTable(new Pessoa());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         onCreate(sqLiteDatabase);
     }
 

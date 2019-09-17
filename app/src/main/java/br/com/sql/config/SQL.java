@@ -1,6 +1,7 @@
 package br.com.sql.config;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class SQL {
                 // setamos ele como visible
                 field.setAccessible(true);
                 // Se o atributo tem a anotação
-                if (field.isAnnotationPresent(Column.class) /*&& !field.isAnnotationPresent(AutoIncrement.class)*/) {
+                if (field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(AutoIncrement.class)) {
                     if (count == 0) {
                         columns += field.getName();
                         value += field.get(obj).toString();
@@ -76,9 +77,9 @@ public class SQL {
                         value += " , " + field.get(obj).toString();
                     }
 
-                }/*else{
+                }else{
                     count = -1;
-                }*/
+                }
                 count++;
             }
 
@@ -98,5 +99,16 @@ public class SQL {
             annotations += " NOT_NULL";
 
         return annotations;
+    }
+
+    public static String deleteTable(Object obj) throws SQLException {
+        Table persistable =
+                obj.getClass().getAnnotation(Table.class);
+        String columns = "";
+        if (persistable != null) {
+            return "DROP TABLE IF EXISTS "+ obj.getClass().getSimpleName();
+        }else{
+            throw new SQLException("This class does not have the table annotation");
+        }
     }
 }
