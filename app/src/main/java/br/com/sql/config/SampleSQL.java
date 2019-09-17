@@ -306,22 +306,27 @@ public class SampleSQL {
         }
 
         public DeleteColumn equals() {
-            SQLString = SQLString + " = ";
+            SQLString += " = ";
             return this;
         }
 
         public DeleteColumn where() {
-            SQLString = SQLString + " WHERE ";
+            SQLString += " WHERE ";
             return this;
         }
 
         public DeleteColumn and() {
-            SQLString = SQLString + " AND ";
+            SQLString += " AND ";
             return this;
         }
 
         public DeleteColumn or() {
-            SQLString = SQLString + " OR ";
+            SQLString += " OR ";
+            return this;
+        }
+
+        public DeleteColumn like(String s){
+            SQLString += "LIKE " + "\"s\"";
             return this;
         }
 
@@ -355,6 +360,10 @@ public class SampleSQL {
             return this;
         }
 
+        public DeleteColumn writeSQL(String sql){
+            SQLString += sql;
+            return this;
+        }
 
         public boolean execute() {
             SQLiteDatabase escrever = helperBD.getWritableDatabase();

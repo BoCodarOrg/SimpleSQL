@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
                 .field("id")
                 .equals()
                 .fieldInt(1)
+                .and()
+                .like("%teste")
                 .execute();
     }
 }
