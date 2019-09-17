@@ -143,7 +143,7 @@ static final int DATABASE_VERSION = 2;
 </blockquote>
 
 ```JAVA
- @Override
+@Override
 public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 	try {
 		SampleSQL.deleteTable(new Pessoa());
