@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
+import java.sql.SQLException;
+
 import br.com.sql.tables.Pessoa;
 
 /**
@@ -33,7 +35,11 @@ public class HelperBD extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-//        SQL.deleleTable(Pessoa.class);
+        try {
+            SampleSQL.deleteTable(new Pessoa());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         onCreate(sqLiteDatabase);
     }
 
