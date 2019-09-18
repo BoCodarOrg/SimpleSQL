@@ -234,7 +234,7 @@ public class SampleSQL {
 
     public class Update{
         private Object typeObject;
-        private String tableName, field, writeSQL, collumn,table;
+        private String tableName, field, writeSQL, collumn,table,stringSet;
         private String SQLString;
         private Object value;
         private String[] values,fields;
@@ -246,7 +246,14 @@ public class SampleSQL {
         }
         public Update set(String[] fields){
             this.fields = fields;
-            SQLString = SQLString + " SET ";
+            stringSet = "";
+            int i = 0;
+            for(String s:fields){
+                stringSet += s+" = %"+i+",";
+                i++;
+            }
+            stringSet = stringSet.substring(0,stringSet.length()-1);
+            SQLString = SQLString + " SET "+stringSet;
             return this;
         }
 
@@ -256,16 +263,28 @@ public class SampleSQL {
         }
 
         public Update where(){
-
+            SQLString = SQLString +" WHERE ";
             return this;
         }
 
         public Update equals(){
+            SQLString = SQLString +" = ";
+            return this;
+        }
+
+        public Update or(){
+            SQLString = SQLString+" OR ";
+            return this;
+        }
+
+        public Update and(){
+            SQLString = SQLString+" AND ";
             return this;
         }
 
         public Update collumn(String name){
             this.collumn = name;
+            SQLString = SQLString +" "+name+" ";
             return this;
         }
 
@@ -306,9 +325,37 @@ public class SampleSQL {
             SQLString = SQLString + " " + operator + " ";
             return this;
         }
+        public boolean execute(){
+            SQLiteDatabase write = helperBD.getReadableDatabase();
+            int i =0;
+            for(String s:fields){
+                String replace = "%"+i;
 
-        public void execute(){}
+                SQLString = SQLString.replace(replace, (CharSequence) getString(values[i]));
+                i++;
+            }
+            SQLString = SQLString+";";
 
+            try{
+                write.execSQL(SQLString);
+                return true;
+            }catch (Exception e){
+                e.printStackTrace();
+                return false;
+            }
+
+        }
+
+    }
+    public Object getString(String string){
+        String s = "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;a;b;c;d;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z;\\;\\";
+        String[] arrays = s.split(";");
+        for(String array:arrays){
+            if(string.contains(array)){
+                return "\""+string+"\"";
+            }
+        }
+        return string;
     }
 
     private static String getFields(String[] args) {
@@ -373,7 +420,7 @@ public class SampleSQL {
                 // Se o atributo tem a anotação
                 if (field.isAnnotationPresent(Column.class)) {
                     if (!field.isAnnotationPresent(AutoIncrement.class)) {
-                        String value = checkObject(field.get(obj));
+                        String value = field.get(obj).toString();
                         values.put(field.getName(), value);
                     }
                 } else
@@ -385,18 +432,12 @@ public class SampleSQL {
             throw new SQLException("This class does not have the table annotation");
     }
 
-    private static String checkObject(Object o) {
-        if (o instanceof String)
-            return "\"" + o.toString() + "\"";
-        return o.toString();
-    }
-
     private static String checkAnnotations(Field c, boolean not_null) {
         String annotations = "";
-        if (c.isAnnotationPresent(AutoIncrement.class))
-            annotations += " AUTOINCREMENT";
         if (c.isAnnotationPresent(Key.class))
             annotations += " PRIMARY KEY";
+        if (c.isAnnotationPresent(AutoIncrement.class))
+            annotations += " AUTOINCREMENT";
         if (not_null && !c.isAnnotationPresent(Key.class))
             annotations += " NOT NULL";
 

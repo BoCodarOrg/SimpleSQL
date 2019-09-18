@@ -1,6 +1,8 @@
 package br.com.sql;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,55 +23,53 @@ import br.com.sql.tables.Pessoa;
 
 public class MainActivity extends AppCompatActivity {
     private EditText etNome,etIdade;
+    private RecyclerView recyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         etNome = findViewById(R.id.etNome);
         etIdade = findViewById(R.id.etIdade);
+        recyclerView = findViewById(R.id.rvPessoas);
+
+
         SampleSQL sampleSql = new SampleSQL(this);
         List<Pessoa> lstPessoa = sampleSql.selectTable(new Pessoa())
-                .fields(new String[]{"nome", "idade"})
+                .fields(new String[]{"nome", "idade","id"})
                 .execute();
 
         sampleSql.updateTable(new Pessoa())
-                .set(new String[]{"nome,idade"})
-                .values(new String[]{"Lucas","10"})
-                .where()
-                .collumn("id")
-                .equals()
-                .fieldInt(1);
+                .set(new String[]{"nome","idade"})
+                .values(new String[]{"Raimundo","12"})
+        .execute();
 
-        for(Pessoa p:lstPessoa){
-            Log.i("select",p.getNome()+" - "+p.getIdade());
-        }
+        RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(lm);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new PessoasAdapter(lstPessoa,this));
     }
 
 
     public void onRegister(View view){
         Pessoa p = new Pessoa();
-        p.setNome("Alow");
-        p.setIdade(12);
+        p.setNome(etNome.getText().toString());
+        p.setIdade(Integer.parseInt(etIdade.getText().toString()));
         boolean result = false;
         try {
             result = new SampleSQL(this).insert(p);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
-
-
         SampleSQL sampleSql = new SampleSQL(this);
-        List<Pessoa> pessoa2 = sampleSql.selectTable(new Pessoa())
-                .where()
-                .equals()
-                .fields(new String[]{"*"})
+
+        List<Pessoa> lstPessoa = sampleSql.selectTable(new Pessoa())
+                .fields(new String[]{"nome", "idade","id"})
                 .execute();
 
-        sampleSql.deleteColumn(new Pessoa())
-                .where()
-                .field("id")
-                .equals()
-                .fieldInt(1)
-                .execute();
+
+        for(Pessoa pe:lstPessoa){
+            Log.i("select",pe.getNome()+" - "+pe.getIdade());
+        }
     }
 }
