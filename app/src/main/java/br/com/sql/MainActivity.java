@@ -2,6 +2,7 @@ package br.com.sql;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sql.config.HelperBD;
@@ -45,23 +48,28 @@ public class MainActivity extends AppCompatActivity {
 
     public void onRegister(View view){
         Pessoa p = new Pessoa();
-        p.setNome("\""+etNome.getText().toString()+"\"");
-        p.setIdade(Integer.parseInt(etIdade.getText().toString()));
-        SQLiteDatabase write = new HelperBD(this).getWritableDatabase();
-
+        p.setNome("Alow");
+        p.setIdade(12);
+        boolean result = false;
         try {
-            write.execSQL(SQL.insert(p));
+            result = new SampleSQL(this).insert(p);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
 
+
         SampleSQL sampleSql = new SampleSQL(this);
-        List<Pessoa> lstPessoa = sampleSql.selectTable(new Pessoa())
-                .fields(new String[]{"nome", "idade"})
+        List<Pessoa> pessoa2 = sampleSql.selectTable(new Pessoa())
+                .where()
+                .equals()
+                .fields(new String[]{"*"})
                 .execute();
 
-        for(Pessoa pe:lstPessoa){
-            Log.i("select",pe.getNome()+" - "+pe.getIdade());
-        }
+        sampleSql.deleteColumn(new Pessoa())
+                .where()
+                .field("id")
+                .equals()
+                .fieldInt(1)
+                .execute();
     }
 }

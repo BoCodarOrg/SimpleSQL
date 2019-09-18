@@ -35,13 +35,13 @@ public class SQL {
                         columns += " , " + field.getName() + " " + column.type();
 
                     }
-                    columns += checkAnnotations(field, column.non_null());
+                    columns += checkAnnotations(field, column);
                     if (field.isAnnotationPresent(ForeignKey.class))
                         foreignKeys.add(field);
                 }
                 count++;
             }
-            String sql = "CREATE TABLE " + tabela + " ( "
+            String sql = "CREATE TABLE IF NOT EXISTS " + tabela + " ( "
                     + columns;
             for (Field key : foreignKeys) {
                 ForeignKey foreignKey = key.getAnnotation(ForeignKey.class);
@@ -63,40 +63,41 @@ public class SQL {
             String tabela = obj.getClass().getSimpleName();
             Field[] fields = obj.getClass().getDeclaredFields();
             int count = 0;
+            boolean comma = true;
             for (Field field : fields) {
                 // como os atributos são private,
                 // setamos ele como visible
                 field.setAccessible(true);
                 // Se o atributo tem a anotação
                 if (field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(AutoIncrement.class)) {
-                    if (count == 0) {
+                    if (!comma) {
                         columns += field.getName();
                         value += field.get(obj).toString();
+                        comma = true;
                     } else {
                         columns += " , " + field.getName();
                         value += " , " + field.get(obj).toString();
                     }
-
-                }else{
-                    count = -1;
+                } else {
+                    comma = false;
                 }
-                count++;
             }
-
-            return "INSERT INTO " + tabela + " (" + columns + ") " +
+            String sql = "INSERT INTO " + tabela +
+                    "(" + columns + ") " +
                     " VALUES ( " + value + " );";
+            return sql;
         }
         return "";
     }
 
-    private static String checkAnnotations(Field c, boolean not_null) {
+    private static String checkAnnotations(Field c, Column column) {
         String annotations = "";
-        if (c.isAnnotationPresent(AutoIncrement.class))
-            annotations += " AUTOINCREMENT";
+            if (column.non_null() && !c.isAnnotationPresent(Key.class))
+            annotations += " NOT NULL";
         if (c.isAnnotationPresent(Key.class))
             annotations += " PRIMARY KEY";
-        if (not_null)
-            annotations += " NOT_NULL";
+        if (c.isAnnotationPresent(AutoIncrement.class))
+            annotations += " AUTOINCREMENT";
 
         return annotations;
     }

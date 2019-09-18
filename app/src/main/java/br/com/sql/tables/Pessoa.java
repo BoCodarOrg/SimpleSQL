@@ -15,7 +15,7 @@ public class Pessoa {
     @Column(type = "TEXT",
             non_null = true)
     private String nome;
-    @ForeignKey(reference = Loja.class)
+//    @ForeignKey(reference = Loja.class)
     @Column(type = "INTEGER"
             ,non_null = true)
     private int idade;

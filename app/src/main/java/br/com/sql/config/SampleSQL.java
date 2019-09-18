@@ -1,5 +1,6 @@
 package br.com.sql.config;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,25 +10,37 @@ import com.google.gson.Gson;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import br.com.sql.tables.Pessoa;
+import br.com.sql.annotations.AutoIncrement;
+import br.com.sql.annotations.Column;
+import br.com.sql.annotations.ForeignKey;
+import br.com.sql.annotations.Key;
+import br.com.sql.annotations.Table;
 
 /**
  * Developed by Lucas Nascimento
  */
 public class SampleSQL {
-    HelperBD helperBD;
+    private static HelperBD helperBD;
 
-    public SampleSQL(Context context){
+    public SampleSQL(Context context) {
         helperBD = new HelperBD(context);
     }
+
     public Select selectTable(Object typeObject) {
         return new Select(typeObject);
     }
+
+    public DeleteColumn deleteColumn(Object o) {
+        return new DeleteColumn(o);
+    }
+
+
     public Update updateTable(Object typeObject){
         return new Update(typeObject);
     }
@@ -65,7 +78,7 @@ public class SampleSQL {
 
         public Select fieldString(String value) {
             this.field = field;
-            SQLString = SQLString + field;
+            SQLString = SQLString + value;
             return this;
         }
 
@@ -176,16 +189,16 @@ public class SampleSQL {
         public List execute() {
             SQLiteDatabase read = helperBD.getReadableDatabase();
             SQLString = SQLString + ";";
-            List  lstClasses = new ArrayList<>();
+            List lstClasses = new ArrayList<>();
             Field[] fields = typeObject.getClass().getDeclaredFields();
-            HashMap<String,Object> hashMap = new HashMap<>();
+            HashMap<String, Object> hashMap = new HashMap<>();
 
             try {
                 Cursor cursor = read.rawQuery(SQLString, null);
                 while (cursor.moveToNext()) {
-                    for(Field f:fields){
-                        Object object = checkItem(cursor,f.getName());
-                        hashMap.put(f.getName(),object);
+                    for (Field f : fields) {
+                        Object object = checkItem(cursor, f.getName());
+                        hashMap.put(f.getName(), object);
                     }
                     String hashJson = new Gson().toJson(hashMap);
                     lstClasses.add(new Gson().fromJson(hashJson, (Type) typeObject.getClass()));
@@ -198,22 +211,22 @@ public class SampleSQL {
             return lstClasses;
         }
 
-        private Object checkItem(Cursor cursor,String name){
+        private Object checkItem(Cursor cursor, String name) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                if(cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_INTEGER ){
+                if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_INTEGER) {
                     return cursor.getInt(cursor.getColumnIndex(name));
-                }else if(cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_FLOAT){
+                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_FLOAT) {
                     return cursor.getFloat(cursor.getColumnIndex(name));
-                }else if(cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_STRING){
+                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_STRING) {
                     return cursor.getString(cursor.getColumnIndex(name));
-                }else if(cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_BLOB){
+                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_BLOB) {
                     return cursor.getBlob(cursor.getColumnIndex(name));
-                }else if(cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_NULL){
+                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_NULL) {
                     return null;
-                }else{
+                } else {
                     return null;
                 }
-            }else{
+            } else {
                 return null;
             }
         }
@@ -302,5 +315,172 @@ public class SampleSQL {
         return Arrays.toString(args).replace("[", "").replace("]", "");
     }
 
+    public static String create(Object obj) throws SQLException {
+        Table persistable =
+                obj.getClass().getAnnotation(Table.class);
+        String columns = "";
+        if (persistable != null) {
+            String tabela = obj.getClass().getSimpleName();
+            Field[] fields = obj.getClass().getDeclaredFields();
+            int count = 0;
+            List<Field> foreignKeys = new ArrayList<>();
+            for (Field field : fields) {
+                // como os atributos são private,
+                // setamos ele como visible
+                field.setAccessible(true);
+                // Se o atributo tem a anotação
+                Column column =
+                        field.getAnnotation(Column.class);
+                if (column != null) {
+                    if (count == 0) {
+                        columns += field.getName() + " " + column.type();
+                    } else {
+                        columns += " , " + field.getName() + " " + column.type();
+
+                    }
+                    columns += checkAnnotations(field, column.non_null());
+                    if (field.isAnnotationPresent(ForeignKey.class))
+                        foreignKeys.add(field);
+                } else
+                    throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
+
+                count++;
+            }
+            String sql = "CREATE TABLE " + tabela + " ( "
+                    + columns;
+            for (Field key : foreignKeys) {
+                ForeignKey foreignKey = key.getAnnotation(ForeignKey.class);
+                sql += " , FOREIGN KEY (" + key.getName() + ")" +
+                        " REFERENCES " + foreignKey.reference().getSimpleName() + "(" + key.getName() + ")";
+            }
+            sql += ");";
+            return sql;
+        } else
+            throw new SQLException("This class does not have the table annotation");
+    }
+
+    public static boolean insert(Object obj) throws Throwable {
+        SQLiteDatabase write = helperBD.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        Table persistable =
+                obj.getClass().getAnnotation(Table.class);
+        if (persistable != null) {
+            Field[] fields = obj.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                // como os atributos são private,
+                // setamos ele como visible
+                field.setAccessible(true);
+                // Se o atributo tem a anotação
+                if (field.isAnnotationPresent(Column.class)) {
+                    if (!field.isAnnotationPresent(AutoIncrement.class)) {
+                        String value = checkObject(field.get(obj));
+                        values.put(field.getName(), value);
+                    }
+                } else
+                    throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
+            }
+            long result = write.insert(obj.getClass().getSimpleName(), null, values);
+            return result != 1;
+        } else
+            throw new SQLException("This class does not have the table annotation");
+    }
+
+    private static String checkObject(Object o) {
+        if (o instanceof String)
+            return "\"" + o.toString() + "\"";
+        return o.toString();
+    }
+
+    private static String checkAnnotations(Field c, boolean not_null) {
+        String annotations = "";
+        if (c.isAnnotationPresent(AutoIncrement.class))
+            annotations += " AUTOINCREMENT";
+        if (c.isAnnotationPresent(Key.class))
+            annotations += " PRIMARY KEY";
+        if (not_null && !c.isAnnotationPresent(Key.class))
+            annotations += " NOT NULL";
+
+        return annotations;
+    }
+
+    public static String deleteTable(Object obj) throws SQLException {
+        Table persistable =
+                obj.getClass().getAnnotation(Table.class);
+        if (persistable != null) {
+            return "DROP TABLE IF EXISTS " + obj.getClass().getSimpleName();
+        } else
+            throw new SQLException("This class does not have the table annotation");
+
+    }
+
+    public class DeleteColumn {
+        private String table, SQLString;
+
+        public DeleteColumn(Object o) {
+            this.table = o.getClass().getSimpleName();
+            this.SQLString = "";
+        }
+
+        public DeleteColumn equals() {
+            SQLString = SQLString + " = ";
+            return this;
+        }
+
+        public DeleteColumn where() {
+            SQLString = SQLString + " WHERE ";
+            return this;
+        }
+
+        public DeleteColumn and() {
+            SQLString = SQLString + " AND ";
+            return this;
+        }
+
+        public DeleteColumn or() {
+            SQLString = SQLString + " OR ";
+            return this;
+        }
+
+        public DeleteColumn fieldString(String value) {
+            SQLString += value;
+            return this;
+        }
+
+        public DeleteColumn fieldInt(int value) {
+            SQLString += value;
+            return this;
+        }
+
+        public DeleteColumn fieldLong(long value) {
+            SQLString += value;
+            return this;
+        }
+
+        public DeleteColumn fieldFloat(int value) {
+            SQLString += value;
+            return this;
+        }
+
+        public DeleteColumn fieldBoolean(int value) {
+            SQLString += value;
+            return this;
+        }
+
+        public DeleteColumn field(String field) {
+            SQLString += field;
+            return this;
+        }
+
+
+        public boolean execute() {
+            SQLiteDatabase escrever = helperBD.getWritableDatabase();
+            try {
+                escrever.execSQL("DELETE FROM " + table + " " + SQLString);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+    }
 
 }

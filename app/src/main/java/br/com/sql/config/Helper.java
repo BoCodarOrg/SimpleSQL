@@ -3,40 +3,35 @@ package br.com.sql.config;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
+import android.util.Log;
 
 import java.sql.SQLException;
 
 import br.com.sql.tables.Pessoa;
 
-/**
- * Created by Lucas Nascimento on 13/09/2019
- * Copyright (c) 2019 GFX Consultoria
- */
-public class HelperBD extends SQLiteOpenHelper {
-    static final int DATABASE_VERSION = 5;
+public class Helper extends SQLiteOpenHelper {
+    static final int DATABASE_VERSION = 4;
     static final String DATABASE_NAME = "example.db";
-    Context context;
 
-    public HelperBD(Context context) {
+    public Helper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         try {
-            sqLiteDatabase.execSQL(SampleSQL.create(new Pessoa()));
-        } catch (Exception e) {
+            sqLiteDatabase.execSQL(SampleSQL.create(Pessoa.class));
+            Log.i("create","Deu certo");
+        } catch (SQLException e) {
             e.printStackTrace();
+            Log.i("create","Deu errado");
         }
-
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         try {
-            SQL.deleteTable(new Pessoa());
+            sqLiteDatabase.execSQL(SampleSQL.deleteTable(Pessoa.class));
         } catch (SQLException e) {
             e.printStackTrace();
         }
