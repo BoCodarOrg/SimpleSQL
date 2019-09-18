@@ -176,23 +176,21 @@ public class SampleSQL {
         }
 
         private Object checkItem(Cursor cursor, String name) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_INTEGER) {
-                    return cursor.getInt(cursor.getColumnIndex(name));
-                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_FLOAT) {
-                    return cursor.getFloat(cursor.getColumnIndex(name));
-                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_STRING) {
-                    return cursor.getString(cursor.getColumnIndex(name));
-                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_BLOB) {
-                    return cursor.getBlob(cursor.getColumnIndex(name));
-                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_NULL) {
-                    return null;
-                } else {
-                    return null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                switch (cursor.getType(cursor.getColumnIndex(name))) {
+                    case Cursor.FIELD_TYPE_INTEGER:
+                        return cursor.getInt(cursor.getColumnIndex(name));
+                    case Cursor.FIELD_TYPE_FLOAT:
+                        return cursor.getFloat(cursor.getColumnIndex(name));
+                    case Cursor.FIELD_TYPE_STRING:
+                        return cursor.getString(cursor.getColumnIndex(name));
+                    case Cursor.FIELD_TYPE_BLOB:
+                        return cursor.getBlob(cursor.getColumnIndex(name));
+                    default:
+                        return null;
                 }
-            } else {
+            else
                 return null;
-            }
         }
     }
 
@@ -247,6 +245,7 @@ public class SampleSQL {
         } else
             throw new SQLException("This class does not have the table annotation");
     }
+
     /**
      * Developed by Paulo Iury
      * Method INSERT
@@ -276,6 +275,7 @@ public class SampleSQL {
         } else
             throw new SQLException("This class does not have the table annotation");
     }
+
     private static String checkAnnotations(Field c, boolean not_null) {
         String annotations = "";
         if (c.isAnnotationPresent(Key.class))
@@ -334,7 +334,7 @@ public class SampleSQL {
             return this;
         }
 
-        public DeleteColumn like(String s){
+        public DeleteColumn like(String s) {
             SQLString += "LIKE " + "\"s\"";
             return this;
         }
@@ -369,7 +369,7 @@ public class SampleSQL {
             return this;
         }
 
-        public DeleteColumn writeSQL(String sql){
+        public DeleteColumn writeSQL(String sql) {
             SQLString += sql;
             return this;
         }
