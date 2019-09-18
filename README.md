@@ -2,7 +2,7 @@
 
 Essa Biblioteca tem como maior função facilitar o uso do SQLite para o android.
 
-Agora vamos mostrar passo a passo de como usar:
+Agora vamos mostrar o passo a passo de como utilizar:
 ### Versões
 v1.0.0
 
