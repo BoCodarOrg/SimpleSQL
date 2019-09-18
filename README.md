@@ -153,3 +153,9 @@ public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 	onCreate(sqLiteDatabase);
 }
 ```
+
+### Importando a lib para o projeto
+```GRADLLE
+implementation 'com.github.sqlsimple.simplesql:{$last_version}'
+```
+
