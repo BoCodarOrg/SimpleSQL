@@ -1,4 +1,4 @@
-# SQLSample
+# SimpleSQL
 
 Essa Biblioteca tem como maior função faciliar o uso do SQLite para o android.
 
