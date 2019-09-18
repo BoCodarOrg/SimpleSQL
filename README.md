@@ -3,7 +3,13 @@
 Essa Biblioteca tem como maior função faciliar o uso do SQLite para o android.
 
 Agora vamos mostrar passo a passo de como usar:
+# Versões
+v1.0.0
 
+### Importando a lib para o projeto
+```GRADLLE
+implementation 'com.github.sqlsimple.simplesql:{$last_version}'
+```
 ### Passo 1: Criar uma classe herdando SQLiteOpenHelper
 
 ```JAVA
@@ -152,10 +158,5 @@ public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 	}
 	onCreate(sqLiteDatabase);
 }
-```
-
-### Importando a lib para o projeto
-```GRADLLE
-implementation 'com.github.sqlsimple.simplesql:{$last_version}'
 ```
 
