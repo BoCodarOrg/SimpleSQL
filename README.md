@@ -98,7 +98,7 @@ public class Pessoa {
 @Override
 public void onCreate(SQLiteDatabase sqLiteDatabase) {
 	try {
-		sqLiteDatabase.execSQL(SampleSQL.create(new Pessoa()));
+		sqLiteDatabase.execSQL(SimpleSQL.create(new Pessoa()));
 	} catch (Exception e) {
 		e.printStackTrace();
 	}
@@ -113,7 +113,7 @@ p.setNome("Alow");
 p.setIdade(12);
 boolean result = false;
 try {
-	result = new SampleSQL(new HelperBD(this)).insert(p);
+	result = new SimpleSQL(new HelperBD(this)).insert(p);
 } catch (Throwable throwable) {
 	throwable.printStackTrace();
 }
@@ -122,8 +122,8 @@ try {
 ### Exemplo de como lista os dados da usa Tabela
 
 ```JAVA
-SampleSQL sampleSql = new SampleSQL(new HelperBD(this));
-List<Pessoa> pessoa2 = sampleSql.selectTable(new Pessoa())
+SimpleSQL simpleSql = new SimpleSQL(new HelperBD(this));
+List<Pessoa> lstPessoas = simpleSql.selectTable(new Pessoa())
 		.where()
 		.equals()
 		.fields(new String[]{"*"})
@@ -152,7 +152,7 @@ static final int DATABASE_VERSION = 2;
 @Override
 public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 	try {
-		SampleSQL.deleteTable(new Pessoa());
+		SimpleSQL.deleteTable(new Pessoa());
 	} catch (SQLException e) {
 		e.printStackTrace();
 	}
