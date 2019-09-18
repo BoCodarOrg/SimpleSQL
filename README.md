@@ -10,45 +10,9 @@ v1.0.0
 ```GRADLLE
 implementation 'com.github.sqlsimple.simplesql:{$last_version}'
 ```
-### Passo 1: Criar uma classe herdando SQLiteOpenHelper
-
-```JAVA
-public class HelperBD extends SQLiteOpenHelper {
-    static final int DATABASE_VERSION = 1;
-    static final String DATABASE_NAME = "example.db";
-    Context context;
-
-    public HelperBD(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context;
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) 
-        onCreate(sqLiteDatabase);
-    }
-
-    @Override
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        super.onDowngrade(db, oldVersion, newVersion);
-        onUpgrade(db, oldVersion, newVersion);
-    }
-}
-```
-
-### Passo 2: Crie sua classe modelo
-
-<blockquote>
-  <p>
-    Preferimos usar a própria classe que vai servir pra passar os dados
-  </p>
-</blockquote>
-
+### Passo 1: Crie sua classe modelo
+  Utilizando a biblioteca, a sua classe modelo também é a sua tabela de banco de dados,  
+  basta você utilizar as anotações necessárias para que as duas se tornem uma só.
 ```JAVA
 @Table
 public class Pessoa {
@@ -92,16 +56,34 @@ public class Pessoa {
 
 ```
 
-### Passo 3: Crie sua Tabela
+### Passo 2: Criar uma classe herdando SQLiteOpenHelper
 
 ```JAVA
-@Override
-public void onCreate(SQLiteDatabase sqLiteDatabase) {
-	try {
-		sqLiteDatabase.execSQL(SimpleSQL.create(new Pessoa()));
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
+public class HelperBD extends SQLiteOpenHelper {
+    static final int DATABASE_VERSION = 1;
+    static final String DATABASE_NAME = "example.db";
+    Context context;
+
+    public HelperBD(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) 
+        onCreate(sqLiteDatabase);
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        super.onDowngrade(db, oldVersion, newVersion);
+        onUpgrade(db, oldVersion, newVersion);
+    }
 }
 ```
 
