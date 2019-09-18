@@ -8,7 +8,7 @@ v1.0.0
 
 ### Importando a lib para o projeto:
 ```GRADLLE
-implementation 'com.github.sqlsimple.simplesql:{$last_version}'
+implementation 'com.github.sqlsimple:simplesql:{$last_version}'
 ```
 ### Passo 1: Crie sua classe modelo
   Utilizando a biblioteca, a sua classe modelo também é a sua tabela de banco de dados,  
