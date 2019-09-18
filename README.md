@@ -57,7 +57,7 @@ public class Pessoa {
 ```
 
 ### Passo 2: Criar uma classe herdando SQLiteOpenHelper
-O Processo inicial de criar um banco de dados continua o mesmo, porém, como já foi visto anteriormente, a sua tabela ja foi criada, então o que você precisar fazer é apenas chamar o um método da classe SimpleSQL dentro do método onCreate(SQLiteDatabase sqlLiteDatabase)
+O Processo inicial de criar um banco de dados continua o mesmo, porém, como já foi visto anteriormente, a sua tabela já foi criada, então o que você precisar fazer é apenas chamar o um método da classe SimpleSQL dentro do método onCreate(SQLiteDatabase sqlLiteDatabase)
 
 ```JAVA
 public class HelperBD extends SQLiteOpenHelper {
@@ -101,7 +101,7 @@ public class HelperBD extends SQLiteOpenHelper {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+	 onCreate(sqLiteDatabase);
     }
 ```
 ### INSERT
@@ -135,7 +135,7 @@ SimpleSQL simpleSql = new SimpleSQL(new HelperBD(this));
  }
  
 ```
-### Delete
+### DELETE
 Para remover algum registro da tabela, ainda segue o mesmo padrão dos métodos anteriores
 ```JAVA
  try {
@@ -168,3 +168,7 @@ try {
  
 ```
  
+# Desenvolvedores
+<a href="https://github.com/PauloYR">Paulo Iury<a>  
+<a href="https://github.com/LukNasc">Lucas Nascimento<a>  
+<a href="https://github.com/jisellevms">Jiselle Martins<a>  
