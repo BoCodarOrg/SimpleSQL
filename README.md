@@ -57,6 +57,7 @@ public class Pessoa {
 ```
 
 ### Passo 2: Criar uma classe herdando SQLiteOpenHelper
+O Processo inicial de criar um banco de dados continua o mesmo, porém, como já foi visto anteriormente, a sua tabela ja foi criada, então o que você precisar fazer é apenas chamar o um método da classe SimpleSQL dentro do método onCreate(SQLiteDatabase sqlLiteDatabase)
 
 ```JAVA
 public class HelperBD extends SQLiteOpenHelper {
@@ -71,7 +72,11 @@ public class HelperBD extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        
+        try {
+            simpleSQL.create(new Pessoa());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -86,9 +91,21 @@ public class HelperBD extends SQLiteOpenHelper {
     }
 }
 ```
+### Deletar a tabela
+ ```JAVA
+  @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        SimpleSQL simpleSQL = new SimpleSQL(this);
+        try {
+            simpleSQL.deleteTable(new Pessoa());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-### Exemplo de como inserir dados na sua Tabela
-
+    }
+```
+### INSERT
+O método insert() irá retornar um valor booleano, onde true é quando for inserido com sucesso e false quando ocorrer algum erro
 ```JAVA
 Pessoa p = new Pessoa();
 p.setNome("Alow");
@@ -101,44 +118,53 @@ try {
 }
 ```
 
-### Exemplo de como lista os dados da usa Tabela
-
+### SELECT
+Para fazer uma listagem dos registro do banco de dados é bem simples, é só criar ua instancia da classe SimpleSQL e utilizar o método selectTable(Objeto) e montar o select da forma que preferir.
 ```JAVA
 SimpleSQL simpleSql = new SimpleSQL(new HelperBD(this));
-List<Pessoa> lstPessoas = simpleSql.selectTable(new Pessoa())
-		.where()
-		.equals()
-		.fields(new String[]{"*"})
-		.execute();
-```		
-
-### Caso seja necessário atualizar o banco, faça da seguinte forma:
-
-<blockquote>
-  <p>
-    Atualizar a versão do Banco
-  </p>
-</blockquote>
-
-```JAVA
-static final int DATABASE_VERSION = 2;
+ try {
+            simpleSQL.selectTable(new Pessoa())
+                    .fields(new String[]{"*"})
+                    .where()
+                    .collumn("id")
+                    .equals()
+                    .fieldInt(1)
+                    .execute();
+ } catch (SQLException e) {
+            e.printStackTrace();
+ }
+ 
 ```
-
-<blockquote>
-  <p>
-    Deletar sua tabela para ela possa receber ou remover algum dado
-  </p>
-</blockquote>
-
+### Delete
+Para remover algum registro da tabela, ainda segue o mesmo padrão dos métodos anteriores
 ```JAVA
-@Override
-public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-	try {
-		SimpleSQL.deleteTable(new Pessoa());
-	} catch (SQLException e) {
-		e.printStackTrace();
-	}
-	onCreate(sqLiteDatabase);
+ try {
+      simpleSQL.deleteColumn(new Pessoa())
+            .where()
+            .column("id")
+            .equals()
+            .fieldInt(1)
+            .execute();
+} catch (SQLException e) {
+            e.printStackTrace();
 }
 ```
-
+### UPDATE
+Ainda utilizando o mesmo padrão dos anteriores você também pode atualizar os registro do banco de dados, da seguinte forma:  
+```JAVA
+SimpleSQL simpleSql = new SimpleSQL(new HelperBD(this));
+try {
+       simpleSQL.updateTable(new Pessoa())
+                    .set(new String[]{"nome","idade"})
+                    .values(new String[]{"Novo Nome","Nova Idade"})
+                    .where()
+                    .collumn("id")
+                    .equals()
+                    .fieldInt(1)
+                    .execute()
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+ 
+```
+ 
