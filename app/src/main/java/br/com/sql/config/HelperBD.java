@@ -36,7 +36,7 @@ public class HelperBD extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         try {
-            SQL.deleteTable(new Pessoa());
+            SampleSQL.deleteTable(new Pessoa());
         } catch (SQLException e) {
             e.printStackTrace();
         }

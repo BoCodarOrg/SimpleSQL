@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 
 import com.google.gson.Gson;
@@ -26,10 +27,10 @@ import br.com.sql.annotations.Table;
  * Developed by Lucas Nascimento
  */
 public class SampleSQL {
-    private static HelperBD helperBD;
+    private static SQLiteOpenHelper helperBD;
 
-    public SampleSQL(Context context) {
-        helperBD = new HelperBD(context);
+    public SampleSQL(SQLiteOpenHelper helperBD) {
+        this.helperBD = helperBD;
     }
 
     public Select selectTable(Object typeObject) {
@@ -212,23 +213,21 @@ public class SampleSQL {
         }
 
         private Object checkItem(Cursor cursor, String name) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_INTEGER) {
-                    return cursor.getInt(cursor.getColumnIndex(name));
-                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_FLOAT) {
-                    return cursor.getFloat(cursor.getColumnIndex(name));
-                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_STRING) {
-                    return cursor.getString(cursor.getColumnIndex(name));
-                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_BLOB) {
-                    return cursor.getBlob(cursor.getColumnIndex(name));
-                } else if (cursor.getType(cursor.getColumnIndex(name)) == Cursor.FIELD_TYPE_NULL) {
-                    return null;
-                } else {
-                    return null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                switch (cursor.getType(cursor.getColumnIndex(name))) {
+                    case Cursor.FIELD_TYPE_INTEGER:
+                        return cursor.getInt(cursor.getColumnIndex(name));
+                    case Cursor.FIELD_TYPE_FLOAT:
+                        return cursor.getFloat(cursor.getColumnIndex(name));
+                    case Cursor.FIELD_TYPE_STRING:
+                        return cursor.getString(cursor.getColumnIndex(name));
+                    case Cursor.FIELD_TYPE_BLOB:
+                        return cursor.getBlob(cursor.getColumnIndex(name));
+                    default:
+                        return null;
                 }
-            } else {
+            else
                 return null;
-            }
         }
     }
 
@@ -362,6 +361,10 @@ public class SampleSQL {
         return Arrays.toString(args).replace("[", "").replace("]", "");
     }
 
+    /**
+     * Developed by Paulo Iury
+     * Method CREATE TABLE
+     */
     public static String create(Object obj) throws SQLException {
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
@@ -406,6 +409,10 @@ public class SampleSQL {
             throw new SQLException("This class does not have the table annotation");
     }
 
+    /**
+     * Developed by Paulo Iury
+     * Method INSERT
+     */
     public static boolean insert(Object obj) throws Throwable {
         SQLiteDatabase write = helperBD.getReadableDatabase();
         ContentValues values = new ContentValues();
@@ -444,6 +451,10 @@ public class SampleSQL {
         return annotations;
     }
 
+    /**
+     * Developed by Paulo Iury
+     * Method DELETE TABLE
+     */
     public static String deleteTable(Object obj) throws SQLException {
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
@@ -454,6 +465,10 @@ public class SampleSQL {
 
     }
 
+    /**
+     * Developed by Paulo Iury
+     * Method DELETE COLUMN
+     */
     public class DeleteColumn {
         private String table, SQLString;
 
@@ -463,22 +478,27 @@ public class SampleSQL {
         }
 
         public DeleteColumn equals() {
-            SQLString = SQLString + " = ";
+            SQLString += " = ";
             return this;
         }
 
         public DeleteColumn where() {
-            SQLString = SQLString + " WHERE ";
+            SQLString += " WHERE ";
             return this;
         }
 
         public DeleteColumn and() {
-            SQLString = SQLString + " AND ";
+            SQLString += " AND ";
             return this;
         }
 
         public DeleteColumn or() {
-            SQLString = SQLString + " OR ";
+            SQLString += " OR ";
+            return this;
+        }
+
+        public DeleteColumn like(String s) {
+            SQLString += "LIKE " + "\"s\"";
             return this;
         }
 
@@ -512,6 +532,10 @@ public class SampleSQL {
             return this;
         }
 
+        public DeleteColumn writeSQL(String sql) {
+            SQLString += sql;
+            return this;
+        }
 
         public boolean execute() {
             SQLiteDatabase escrever = helperBD.getWritableDatabase();
@@ -523,5 +547,4 @@ public class SampleSQL {
             }
         }
     }
-
 }

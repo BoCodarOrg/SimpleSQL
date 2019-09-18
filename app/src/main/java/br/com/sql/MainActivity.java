@@ -57,19 +57,23 @@ public class MainActivity extends AppCompatActivity {
         p.setIdade(Integer.parseInt(etIdade.getText().toString()));
         boolean result = false;
         try {
-            result = new SampleSQL(this).insert(p);
+            result = new SampleSQL(new HelperBD(this)).insert(p);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
         SampleSQL sampleSql = new SampleSQL(this);
 
-        List<Pessoa> lstPessoa = sampleSql.selectTable(new Pessoa())
-                .fields(new String[]{"nome", "idade","id"})
+        List<Pessoa> pessoa2 = sampleSql.selectTable(new Pessoa())
+                .fields(new String[]{"*"})
                 .execute();
 
-
-        for(Pessoa pe:lstPessoa){
-            Log.i("select",pe.getNome()+" - "+pe.getIdade());
-        }
+        sampleSql.deleteColumn(new Pessoa())
+                .where()
+                .field("id")
+                .equals()
+                .fieldInt(1)
+                .and()
+                .like("%teste")
+                .execute();
     }
 }
