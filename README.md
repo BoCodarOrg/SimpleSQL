@@ -6,7 +6,7 @@ Agora vamos mostrar o passo a passo de como utilizar:
 ### Versões
 v1.0.0
 
-### Importando a lib para o projeto
+### Importando a lib para o projeto:
 ```GRADLLE
 implementation 'com.github.sqlsimple.simplesql:{$last_version}'
 ```
