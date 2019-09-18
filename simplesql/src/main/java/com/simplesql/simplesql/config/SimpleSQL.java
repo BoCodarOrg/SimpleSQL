@@ -236,6 +236,11 @@ public class SimpleSQL {
         }
     }
 
+    /**
+     * Developed by Lucas Nascimento
+     * Method UPDATE
+     */
+
     public class Update{
         private Object typeObject;
         private String tableName, field, writeSQL, collumn,table,stringSet;
@@ -370,7 +375,7 @@ public class SimpleSQL {
      * Developed by Paulo Iury
      * Method CREATE TABLE
      */
-    public static String create(Object obj) throws SQLException {
+    public  String create(Object obj) throws SQLException {
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
         String columns = "";
@@ -418,7 +423,7 @@ public class SimpleSQL {
      * Developed by Paulo Iury
      * Method INSERT
      */
-    public static boolean insert(Object obj) throws Throwable {
+    public boolean insert(Object obj) throws Throwable {
         SQLiteDatabase write = helperBD.getReadableDatabase();
         ContentValues values = new ContentValues();
         Table persistable =
