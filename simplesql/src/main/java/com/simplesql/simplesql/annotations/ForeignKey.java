@@ -1,4 +1,4 @@
-package br.com.sql.annotations;
+package com.simplesql.simplesql.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

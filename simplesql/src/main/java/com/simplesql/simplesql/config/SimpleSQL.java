@@ -1,7 +1,6 @@
-package br.com.sql.config;
+package com.simplesql.simplesql.config;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -17,19 +16,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import br.com.sql.annotations.AutoIncrement;
-import br.com.sql.annotations.Column;
-import br.com.sql.annotations.ForeignKey;
-import br.com.sql.annotations.Key;
-import br.com.sql.annotations.Table;
+import com.simplesql.simplesql.annotations.AutoIncrement;
+import com.simplesql.simplesql.annotations.Column;
+import com.simplesql.simplesql.annotations.ForeignKey;
+import com.simplesql.simplesql.annotations.Key;
+import com.simplesql.simplesql.annotations.Table;
 
 /**
  * Developed by Lucas Nascimento
  */
-public class SampleSQL {
+public class SimpleSQL {
     private static SQLiteOpenHelper helperBD;
 
-    public SampleSQL(SQLiteOpenHelper helperBD) {
+    public SimpleSQL(SQLiteOpenHelper helperBD) {
         this.helperBD = helperBD;
     }
 
@@ -71,7 +70,7 @@ public class SampleSQL {
             return this;
         }
 
-        public SampleSQL.Select fields(String[] fields) {
+        public SimpleSQL.Select fields(String[] fields) {
             this.fields = fields;
             SQLString = SQLString + getFields(fields) + " FROM " + tableName;
             return this;
@@ -187,7 +186,13 @@ public class SampleSQL {
             return this;
         }
 
-        public List execute() {
+        /**
+         * TODO
+         *
+         *
+         * */
+
+        public List execute() throws SQLException{
             SQLiteDatabase read = helperBD.getReadableDatabase();
             SQLString = SQLString + ";";
             List lstClasses = new ArrayList<>();
