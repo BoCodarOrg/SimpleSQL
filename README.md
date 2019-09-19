@@ -80,6 +80,7 @@ public class HelperBD extends SQLiteOpenHelper {
     public HelperBD(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
+	simpleSQL = new SimpleSQL(this);
     }
 
     @Override
@@ -107,7 +108,6 @@ public class HelperBD extends SQLiteOpenHelper {
  ```JAVA
   @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        SimpleSQL simpleSQL = new SimpleSQL(this);
         try {
             simpleSQL.deleteTable(new Pessoa());
         } catch (SQLException e) {
