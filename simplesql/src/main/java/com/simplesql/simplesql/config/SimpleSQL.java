@@ -480,7 +480,7 @@ public class SimpleSQL {
      * Developed by Paulo Iury
      * Method DELETE TABLE
      */
-    public static String deleteTable(Object obj) throws SQLException {
+    public String deleteTable(Object obj) throws SQLException {
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
         if (persistable != null) {

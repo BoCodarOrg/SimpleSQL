@@ -4,13 +4,16 @@ Essa Biblioteca tem como maior função facilitar o uso do SQLite para o android
 
 Agora vamos mostrar o passo a passo de como utilizar:
 ### Versões
-v1.0.1
+<a href="">v1.0.0</a>  
+<a href="">v1.0.1</a>  
+<a href="">v1.0.2</a>  
+<a href="">v1.0.3</a>  
 
 ### Importando a lib para o projeto:
 ```GRADLLE
 implementation 'com.github.p2jorg:simplesql:{$last_version}'
 ```
-## *Observação - Caso você não tenha o JitPack, adicione em seu module project a linha de código com o comentário:
+### *Observação - Caso você não tenha o JitPack, adicione em seu module project a linha de código com o comentário:
 ```GRADLLE
 allprojects {
     repositories {
