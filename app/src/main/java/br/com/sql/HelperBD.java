@@ -8,23 +8,30 @@ import androidx.annotation.Nullable;
 
 import com.simplesql.simplesql.config.SimpleSQL;
 
+import java.sql.SQLException;
+
 /**
  * Created by Lucas Nascimento on 18/09/2019
  * Copyright (c) 2019 GFX Consultoria
  */
 public class HelperBD extends SQLiteOpenHelper {
     private static final String NAME = "nome_banco.bd";
-    private static final int VERSION = 1;
+    private static final int VERSION = 4;
     public HelperBD(@Nullable Context context) {
         super(context, NAME, null, VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        try {
+            sqLiteDatabase.execSQL(new SimpleSQL(this).create(new Pessoa()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        onCreate(sqLiteDatabase);
     }
 }

@@ -203,7 +203,7 @@ public class SimpleSQL {
                 Cursor cursor = read.rawQuery(SQLString, null);
                 while (cursor.moveToNext()) {
                     for (Field f : fields) {
-                        Object object = checkItem(cursor, f.getName());
+                        Object object = checkItem(f, cursor);
                         hashMap.put(f.getName(), object);
                     }
                     String hashJson = new Gson().toJson(hashMap);
@@ -217,14 +217,23 @@ public class SimpleSQL {
             return lstClasses;
         }
 
-        private Object checkItem(Cursor cursor, String name) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+        private Object checkItem(Field field, Cursor cursor) {
+            String name = field.getName();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                if (field.getType() == String.class)
+                    return cursor.getString(cursor.getColumnIndex(name));
+                else if (field.getType() == long.class)
+                    return cursor.getLong(cursor.getColumnIndex(name));
+                else if (field.getType() == float.class)
+                    return cursor.getFloat(cursor.getColumnIndex(name));
+                else if (field.getType() == byte[].class)
+                    return cursor.getBlob(cursor.getColumnIndex(name));
+                else if (field.getType() == int.class)
+                    return cursor.getInt(cursor.getColumnIndex(name));
+
                 switch (cursor.getType(cursor.getColumnIndex(name))) {
                     case Cursor.FIELD_TYPE_INTEGER:
-                        if (((SQLiteCursor) cursor).isLong(cursor.getColumnIndex(name)))
-                            return cursor.getLong(cursor.getColumnIndex(name));
-                        else
-                            return cursor.getInt(cursor.getColumnIndex(name));
+                        return cursor.getInt(cursor.getColumnIndex(name));
                     case Cursor.FIELD_TYPE_FLOAT:
                         return cursor.getFloat(cursor.getColumnIndex(name));
                     case Cursor.FIELD_TYPE_STRING:
@@ -234,7 +243,7 @@ public class SimpleSQL {
                     default:
                         return null;
                 }
-            else
+            } else
                 return null;
         }
     }
@@ -450,7 +459,7 @@ public class SimpleSQL {
                     throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
             }
             long result = write.insert(obj.getClass().getSimpleName(), null, values);
-            return result != 1;
+            return result != -1;
         } else
             throw new SQLException("This class does not have the table annotation");
     }
