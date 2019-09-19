@@ -10,6 +10,17 @@ v1.0.0
 ```GRADLLE
 implementation 'com.github.p2jorg:simplesql:{$last_version}'
 ```
+### Observação, caso não tenha o JitPack, adicione em seu module project a linha de código destacada:
+```GRADLLE
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url "https://jitpack.io" }
+        
+    }
+}
+```
 ### Passo 1: Crie sua classe modelo
   Utilizando a biblioteca, a sua classe modelo também é a sua tabela de banco de dados,  
   basta você utilizar as anotações necessárias para que as duas se tornem uma só.
