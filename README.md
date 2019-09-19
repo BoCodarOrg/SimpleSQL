@@ -75,6 +75,7 @@ public class HelperBD extends SQLiteOpenHelper {
     static final int DATABASE_VERSION = 1;
     static final String DATABASE_NAME = "example.db";
     Context context;
+    SimpleSQL simpleSQL;
 
     public HelperBD(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
