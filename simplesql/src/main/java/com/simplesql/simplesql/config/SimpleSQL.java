@@ -411,7 +411,7 @@ public class SimpleSQL {
             for (Field key : foreignKeys) {
                 ForeignKey foreignKey = key.getAnnotation(ForeignKey.class);
                 sql += " , FOREIGN KEY (" + key.getName() + ")" +
-                        " REFERENCES " + foreignKey.reference().getSimpleName() + "(" + key.getName() + ")";
+                        " REFERENCES " + foreignKey.table().getSimpleName() + "(" + foreignKey.column() + ")";
             }
             sql += ");";
             return sql;
