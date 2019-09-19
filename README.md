@@ -10,7 +10,7 @@ v1.0.1
 ```GRADLLE
 implementation 'com.github.p2jorg:simplesql:{$last_version}'
 ```
-### Observação*, caso você não tenha o JitPack, adicione em seu module project a linha de código com o comentário:
+## *Observação - Caso você não tenha o JitPack, adicione em seu module project a linha de código com o comentário:
 ```GRADLLE
 allprojects {
     repositories {
