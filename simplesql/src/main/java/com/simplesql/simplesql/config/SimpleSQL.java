@@ -2,6 +2,7 @@ package com.simplesql.simplesql.config;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
@@ -41,17 +42,18 @@ public class SimpleSQL {
     }
 
 
-    public Update updateTable(Object typeObject){
+    public Update updateTable(Object typeObject) {
         return new Update(typeObject);
     }
+
     /**
      * Developed by Lucas Nascimento
      * Method SELECT
      */
     public class Select {
-        private String tableName, field, writeSQL, collumn,table;
+        private String tableName, field, writeSQL, collumn, table;
         private String[] fields;
-        private boolean where, equals, between, or,on, and, like,innerJoin,leftJoin,rightJoin,fullJoin;
+        private boolean where, equals, between, or, on, and, like, innerJoin, leftJoin, rightJoin, fullJoin;
         private Object value;
         private String SQLString;
         private Object typeObject;
@@ -114,10 +116,10 @@ public class SimpleSQL {
             return this;
         }
 
-        public Select table(String table){
-           this.table = table;
-           SQLString = SQLString + " "+table+" ";
-           return this;
+        public Select table(String table) {
+            this.table = table;
+            SQLString = SQLString + " " + table + " ";
+            return this;
         }
 
         public Select equals() {
@@ -150,33 +152,33 @@ public class SimpleSQL {
             return this;
         }
 
-        public Select innerJoin(){
+        public Select innerJoin() {
             this.innerJoin = true;
-            SQLString = SQLString+" INNER JOIN ";
+            SQLString = SQLString + " INNER JOIN ";
             return this;
         }
 
-        public Select leftJoin(){
+        public Select leftJoin() {
             this.leftJoin = true;
-            SQLString = SQLString+" LEFT JOIN ";
+            SQLString = SQLString + " LEFT JOIN ";
             return this;
         }
 
-        public Select rigthJoin(){
+        public Select rigthJoin() {
             this.rightJoin = true;
-            SQLString = SQLString+" RIGHT JOIN ";
+            SQLString = SQLString + " RIGHT JOIN ";
             return this;
         }
 
-        public Select fullJoin(){
+        public Select fullJoin() {
             this.innerJoin = true;
-            SQLString = SQLString+" FULL JOIN ";
+            SQLString = SQLString + " FULL JOIN ";
             return this;
         }
 
-        public Select on(){
+        public Select on() {
             this.on = true;
-            SQLString = SQLString+" ON ";
+            SQLString = SQLString + " ON ";
             return this;
         }
 
@@ -188,11 +190,9 @@ public class SimpleSQL {
 
         /**
          * TODO
-         *
-         *
-         * */
+         */
 
-        public List execute() throws SQLException{
+        public List execute() throws SQLException {
             SQLiteDatabase read = helperBD.getReadableDatabase();
             SQLString = SQLString + ";";
             List lstClasses = new ArrayList<>();
@@ -221,7 +221,10 @@ public class SimpleSQL {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
                 switch (cursor.getType(cursor.getColumnIndex(name))) {
                     case Cursor.FIELD_TYPE_INTEGER:
-                        return cursor.getInt(cursor.getColumnIndex(name));
+                        if (((SQLiteCursor) cursor).isLong(cursor.getColumnIndex(name)))
+                            return cursor.getLong(cursor.getColumnIndex(name));
+                        else
+                            return cursor.getInt(cursor.getColumnIndex(name));
                     case Cursor.FIELD_TYPE_FLOAT:
                         return cursor.getFloat(cursor.getColumnIndex(name));
                     case Cursor.FIELD_TYPE_STRING:
@@ -241,59 +244,60 @@ public class SimpleSQL {
      * Method UPDATE
      */
 
-    public class Update{
+    public class Update {
         private Object typeObject;
-        private String tableName, field, writeSQL, collumn,table,stringSet;
+        private String tableName, field, writeSQL, collumn, table, stringSet;
         private String SQLString;
         private Object value;
-        private String[] values,fields;
+        private String[] values, fields;
 
         public Update(Object typeObject) {
             this.tableName = typeObject.getClass().getSimpleName();
             this.typeObject = typeObject;
-            SQLString = "UPDATE "+tableName;
+            SQLString = "UPDATE " + tableName;
         }
-        public Update set(String[] fields){
+
+        public Update set(String[] fields) {
             this.fields = fields;
             stringSet = "";
             int i = 0;
-            for(String s:fields){
-                stringSet += s+" = %"+i+",";
+            for (String s : fields) {
+                stringSet += s + " = %" + i + ",";
                 i++;
             }
-            stringSet = stringSet.substring(0,stringSet.length()-1);
-            SQLString = SQLString + " SET "+stringSet;
+            stringSet = stringSet.substring(0, stringSet.length() - 1);
+            SQLString = SQLString + " SET " + stringSet;
             return this;
         }
 
-        public Update values(String[] values){
-            this.values=values;
+        public Update values(String[] values) {
+            this.values = values;
             return this;
         }
 
-        public Update where(){
-            SQLString = SQLString +" WHERE ";
+        public Update where() {
+            SQLString = SQLString + " WHERE ";
             return this;
         }
 
-        public Update equals(){
-            SQLString = SQLString +" = ";
+        public Update equals() {
+            SQLString = SQLString + " = ";
             return this;
         }
 
-        public Update or(){
-            SQLString = SQLString+" OR ";
+        public Update or() {
+            SQLString = SQLString + " OR ";
             return this;
         }
 
-        public Update and(){
-            SQLString = SQLString+" AND ";
+        public Update and() {
+            SQLString = SQLString + " AND ";
             return this;
         }
 
-        public Update collumn(String name){
+        public Update collumn(String name) {
             this.collumn = name;
-            SQLString = SQLString +" "+name+" ";
+            SQLString = SQLString + " " + name + " ";
             return this;
         }
 
@@ -334,21 +338,22 @@ public class SimpleSQL {
             SQLString = SQLString + " " + operator + " ";
             return this;
         }
-        public boolean execute(){
+
+        public boolean execute() {
             SQLiteDatabase write = helperBD.getReadableDatabase();
-            int i =0;
-            for(String s:fields){
-                String replace = "%"+i;
+            int i = 0;
+            for (String s : fields) {
+                String replace = "%" + i;
 
                 SQLString = SQLString.replace(replace, (CharSequence) getString(values[i]));
                 i++;
             }
-            SQLString = SQLString+";";
+            SQLString = SQLString + ";";
 
-            try{
+            try {
                 write.execSQL(SQLString);
                 return true;
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
@@ -356,12 +361,13 @@ public class SimpleSQL {
         }
 
     }
-    public Object getString(String string){
+
+    public Object getString(String string) {
         String s = "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;a;b;c;d;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z;\\;\\";
         String[] arrays = s.split(";");
-        for(String array:arrays){
-            if(string.contains(array)){
-                return "\""+string+"\"";
+        for (String array : arrays) {
+            if (string.contains(array)) {
+                return "\"" + string + "\"";
             }
         }
         return string;
@@ -375,7 +381,7 @@ public class SimpleSQL {
      * Developed by Paulo Iury
      * Method CREATE TABLE
      */
-    public  String create(Object obj) throws SQLException {
+    public String create(Object obj) throws SQLException {
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
         String columns = "";
@@ -449,7 +455,7 @@ public class SimpleSQL {
             throw new SQLException("This class does not have the table annotation");
     }
 
-    private static String checkAnnotations(Field c, boolean not_null) {
+    private String checkAnnotations(Field c, boolean not_null) {
         String annotations = "";
         if (c.isAnnotationPresent(Key.class))
             annotations += " PRIMARY KEY";
