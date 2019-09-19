@@ -4,7 +4,7 @@ Essa Biblioteca tem como maior função facilitar o uso do SQLite para o android
 
 Agora vamos mostrar o passo a passo de como utilizar:
 ### Versões
-v1.0.1
+v1.0.2
 
 ### Importando a lib para o projeto:
 ```GRADLLE
