@@ -13,7 +13,7 @@ Agora vamos mostrar o passo a passo de como utilizar:
 ```GRADLLE
 implementation 'com.github.p2jorg:simplesql:{$last_version}'
 ```
-### *Observação - Caso você não tenha o JitPack, adicione em seu module project a linha de código com o comentário:
+##### *Observação - Caso você não tenha o JitPack, adicione em seu module project a linha de código com o comentário:
 ```GRADLLE
 allprojects {
     repositories {
