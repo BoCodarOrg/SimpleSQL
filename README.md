@@ -109,11 +109,7 @@ public class HelperBD extends SQLiteOpenHelper {
  ```JAVA
   @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        try {
-            simpleSQL.deleteTable(new Pessoa());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+         String _return = simpleSQL.deleteTable(new Pessoa(),db);
 	 onCreate(sqLiteDatabase);
     }
 ```
