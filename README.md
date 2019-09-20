@@ -9,7 +9,9 @@ Agora vamos mostrar o passo a passo de como utilizar:
 <a href="">v1.0.2</a>  
 <a href="">v1.0.3</a>  
 <a href="">v1.0.4</a>  
-<a href="">v1.0.5</a>  
+<a href="">v1.0.5</a>
+<a href="">v1.0.6</a>
+<a href="">v1.0.7</a>
 
 ### Importando a lib para o projeto:
 ```groovy
@@ -132,7 +134,7 @@ SimpleSQL simpleSql = new SimpleSQL(new HelperBD(this));
 List<Pessoa> list = simpleSQL.selectTable(new Pessoa())
 			    .fields(new String[]{"*"})
 			    .where()
-			    .collumn("id")
+			    .column("id")
 			    .equals()
 			    .fieldInt(1)
 			    .execute();
@@ -157,7 +159,7 @@ boolean result = simpleSQL.updateTable(new Pessoa())
                     	.set(new String[]{"nome","idade"})
                     	.values(new String[]{"Novo Nome","Nova Idade"})
                     	.where()
-                    	.collumn("id")
+                    	.column("id")
                     	.equals()
                     	.fieldInt(1)
                     	.execute()

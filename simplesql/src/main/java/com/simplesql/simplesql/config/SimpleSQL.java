@@ -47,7 +47,7 @@ public class SimpleSQL {
      * Method SELECT
      */
     public class Select {
-        private String tableName, field, writeSQL, collumn, table;
+        private String tableName, field, writeSQL, column, table;
         private String[] fields;
         private boolean where, equals, between, or, on, and, like, innerJoin, leftJoin, rightJoin, fullJoin;
         private Object value;
@@ -64,9 +64,9 @@ public class SimpleSQL {
         }
 
 
-        public Select collumn(String collumn) {
-            this.collumn = collumn;
-            SQLString = SQLString + collumn;
+        public Select column(String column) {
+            this.column = column;
+            SQLString = SQLString + column;
             return this;
         }
 
@@ -261,7 +261,7 @@ public class SimpleSQL {
 
     public class Update{
         private Object typeObject;
-        private String tableName, field, writeSQL, collumn, table, stringSet;
+        private String tableName, field, writeSQL, column, table, stringSet;
         private String SQLString;
         private Object value;
         private String[] values, fields;
@@ -317,8 +317,8 @@ public class SimpleSQL {
             return this;
         }
 
-        public Update collumn(String name){
-            this.collumn = name;
+        public Update column(String name){
+            this.column = name;
             SQLString = SQLString +" "+name+" ";
             return this;
         }
@@ -597,7 +597,7 @@ public class SimpleSQL {
             return this;
         }
 
-        public DeleteColumn field(String field) {
+        public DeleteColumn column(String field) {
             SQLString += field;
             return this;
         }
