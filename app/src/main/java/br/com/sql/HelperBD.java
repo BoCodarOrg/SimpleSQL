@@ -26,18 +26,19 @@ public class HelperBD extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String retorno = simpleSQL.create(new Pessoa(),db);
+        String _return = simpleSQL.create(new Pessoa(), db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        String retorno = simpleSQL.deleteTable(new Pessoa(),db);
+        String _retorn = simpleSQL.deleteTable(new Pessoa(), db);
         onCreate(db);
     }
 
     @Override
-    public void onOpen(SQLiteDatabase db) {
-        super.onOpen(db);
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        super.onDowngrade(db, oldVersion, newVersion);
+        onUpgrade(db, oldVersion, newVersion);
     }
 
 }
