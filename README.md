@@ -107,11 +107,11 @@ public class HelperBD extends SQLiteOpenHelper {
 ```
 ### Deletar a tabela
  ```JAVA
-  @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-         String _return = simpleSQL.deleteTable(new Pessoa(),db);
-	 onCreate(sqLiteDatabase);
-    }
+@Override
+public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+	String _return = simpleSQL.deleteTable(new Pessoa(),db);
+	onCreate(sqLiteDatabase);
+}
 ```
 ### INSERT
 O método insert() irá retornar um valor booleano, onde true é quando for inserido com sucesso e false quando ocorrer algum erro
