@@ -9,9 +9,9 @@ Agora vamos mostrar o passo a passo de como utilizar:
 <a href="">v1.0.2</a>  
 <a href="">v1.0.3</a>  
 <a href="">v1.0.4</a>  
-<a href="">v1.0.5</a>
-<a href="">v1.0.6</a>
-<a href="">v1.0.7</a>
+<a href="">v1.0.5</a>  
+<a href="">v1.0.6</a>  
+<a href="">v1.0.7</a>  
 
 ### Importando a lib para o projeto:
 ```groovy
