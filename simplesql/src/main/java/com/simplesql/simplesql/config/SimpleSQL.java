@@ -22,11 +22,8 @@ import com.simplesql.simplesql.annotations.ForeignKey;
 import com.simplesql.simplesql.annotations.Key;
 import com.simplesql.simplesql.annotations.Table;
 
-/**
- * Developed by Lucas Nascimento
- */
 public class SimpleSQL {
-    private static SQLiteOpenHelper helperBD;
+    private SQLiteOpenHelper helperBD;
 
     public SimpleSQL(SQLiteOpenHelper helperBD) {
         this.helperBD = helperBD;
@@ -41,22 +38,25 @@ public class SimpleSQL {
     }
 
 
-    public Update updateTable(Object typeObject){
+    public Update updateTable(Object typeObject) {
         return new Update(typeObject);
     }
+
     /**
      * Developed by Lucas Nascimento
      * Method SELECT
      */
     public class Select {
-        private String tableName, field, writeSQL, collumn,table;
+        private String tableName, field, writeSQL, collumn, table;
         private String[] fields;
-        private boolean where, equals, between, or,on, and, like,innerJoin,leftJoin,rightJoin,fullJoin;
+        private boolean where, equals, between, or, on, and, like, innerJoin, leftJoin, rightJoin, fullJoin;
         private Object value;
         private String SQLString;
         private Object typeObject;
 
-
+        /**
+         * @param typeObject
+         */
         public Select(Object typeObject) {
             this.tableName = typeObject.getClass().getSimpleName();
             this.typeObject = typeObject;
@@ -114,10 +114,10 @@ public class SimpleSQL {
             return this;
         }
 
-        public Select table(String table){
-           this.table = table;
-           SQLString = SQLString + " "+table+" ";
-           return this;
+        public Select table(String table) {
+            this.table = table;
+            SQLString = SQLString + " " + table + " ";
+            return this;
         }
 
         public Select equals() {
@@ -186,53 +186,71 @@ public class SimpleSQL {
             return this;
         }
 
-        /**
-         * TODO
-         *
-         *
-         * */
-
-        public List execute() throws SQLException{
+        public List execute() {
             SQLiteDatabase read = helperBD.getReadableDatabase();
             SQLString = SQLString + ";";
             List lstClasses = new ArrayList<>();
             Field[] fields = typeObject.getClass().getDeclaredFields();
             HashMap<String, Object> hashMap = new HashMap<>();
-
             try {
                 Cursor cursor = read.rawQuery(SQLString, null);
                 while (cursor.moveToNext()) {
                     for (Field f : fields) {
-                        Object object = checkItem(cursor, f.getName());
-                        hashMap.put(f.getName(), object);
+                        Object object = checkItem(f, cursor);
+                        if (object != null)
+                            hashMap.put(f.getName(), object);
                     }
                     String hashJson = new Gson().toJson(hashMap);
                     lstClasses.add(new Gson().fromJson(hashJson, (Type) typeObject.getClass()));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                return new ArrayList();
             }
 
 
             return lstClasses;
         }
 
-        private Object checkItem(Cursor cursor, String name) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                switch (cursor.getType(cursor.getColumnIndex(name))) {
-                    case Cursor.FIELD_TYPE_INTEGER:
-                        return cursor.getInt(cursor.getColumnIndex(name));
-                    case Cursor.FIELD_TYPE_FLOAT:
-                        return cursor.getFloat(cursor.getColumnIndex(name));
-                    case Cursor.FIELD_TYPE_STRING:
+        /**
+         * @param field
+         * @param cursor
+         * @return object
+         */
+        private Object checkItem(Field field, Cursor cursor) {
+            String name = field.getName();
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    if (field.getType() == String.class)
                         return cursor.getString(cursor.getColumnIndex(name));
-                    case Cursor.FIELD_TYPE_BLOB:
+                    else if (field.getType() == long.class)
+                        return cursor.getLong(cursor.getColumnIndex(name));
+                    else if (field.getType() == float.class)
+                        return cursor.getFloat(cursor.getColumnIndex(name));
+                    else if (field.getType() == byte[].class)
                         return cursor.getBlob(cursor.getColumnIndex(name));
-                    default:
-                        return null;
-                }
-            else
+                    else if (field.getType() == int.class)
+                        return cursor.getInt(cursor.getColumnIndex(name));
+                    else if (field.getType() == short.class)
+                        return cursor.getShort(cursor.getColumnIndex(name));
+
+                    switch (cursor.getType(cursor.getColumnIndex(name))) {
+                        case Cursor.FIELD_TYPE_INTEGER:
+                            return cursor.getInt(cursor.getColumnIndex(name));
+                        case Cursor.FIELD_TYPE_FLOAT:
+                            return cursor.getFloat(cursor.getColumnIndex(name));
+                        case Cursor.FIELD_TYPE_STRING:
+                            return cursor.getString(cursor.getColumnIndex(name));
+                        case Cursor.FIELD_TYPE_BLOB:
+                            return cursor.getBlob(cursor.getColumnIndex(name));
+                        default:
+                            return null;
+                    }
+                } else
+                    return null;
+            } catch (Exception e) {
                 return null;
+            }
         }
     }
 
@@ -243,36 +261,44 @@ public class SimpleSQL {
 
     public class Update{
         private Object typeObject;
-        private String tableName, field, writeSQL, collumn,table,stringSet;
+        private String tableName, field, writeSQL, collumn, table, stringSet;
         private String SQLString;
         private Object value;
-        private String[] values,fields;
+        private String[] values, fields;
 
+        /**
+         * @param typeObject
+         */
         public Update(Object typeObject) {
             this.tableName = typeObject.getClass().getSimpleName();
             this.typeObject = typeObject;
-            SQLString = "UPDATE "+tableName;
+            SQLString = "UPDATE " + tableName;
         }
-        public Update set(String[] fields){
+
+        /**
+         * @param fields
+         * @return
+         */
+        public Update set(String[] fields) {
             this.fields = fields;
             stringSet = "";
             int i = 0;
-            for(String s:fields){
-                stringSet += s+" = %"+i+",";
+            for (String s : fields) {
+                stringSet += s + " = %" + i + ",";
                 i++;
             }
-            stringSet = stringSet.substring(0,stringSet.length()-1);
-            SQLString = SQLString + " SET "+stringSet;
+            stringSet = stringSet.substring(0, stringSet.length() - 1);
+            SQLString = SQLString + " SET " + stringSet;
             return this;
         }
 
-        public Update values(String[] values){
-            this.values=values;
+        public Update values(String[] values) {
+            this.values = values;
             return this;
         }
 
-        public Update where(){
-            SQLString = SQLString +" WHERE ";
+        public Update where() {
+            SQLString = SQLString + " WHERE ";
             return this;
         }
 
@@ -299,7 +325,7 @@ public class SimpleSQL {
 
         public Update fieldString(String value) {
             this.field = field;
-            SQLString = SQLString + value;
+            SQLString = SQLString + "\""+value+"\"";
             return this;
         }
 
@@ -334,21 +360,24 @@ public class SimpleSQL {
             SQLString = SQLString + " " + operator + " ";
             return this;
         }
-        public boolean execute(){
+
+        /**
+         * @return
+         */
+        public boolean execute() {
             SQLiteDatabase write = helperBD.getReadableDatabase();
-            int i =0;
-            for(String s:fields){
-                String replace = "%"+i;
+            int i = 0;
+            for (String s : fields) {
+                String replace = "%" + i;
 
                 SQLString = SQLString.replace(replace, (CharSequence) getString(values[i]));
                 i++;
             }
-            SQLString = SQLString+";";
-
-            try{
+            SQLString = SQLString + ";";
+            try {
                 write.execSQL(SQLString);
                 return true;
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
@@ -356,12 +385,13 @@ public class SimpleSQL {
         }
 
     }
-    public Object getString(String string){
+
+    public Object getString(String string) {
         String s = "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;a;b;c;d;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z;\\;\\";
         String[] arrays = s.split(";");
-        for(String array:arrays){
-            if(string.contains(array)){
-                return "\""+string+"\"";
+        for (String array : arrays) {
+            if (string.contains(array)) {
+                return "\"" + string + "\"";
             }
         }
         return string;
@@ -375,78 +405,99 @@ public class SimpleSQL {
      * Developed by Paulo Iury
      * Method CREATE TABLE
      */
-    public  String create(Object obj) throws SQLException {
+    public String create(Object obj, SQLiteDatabase db) {
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
         String columns = "";
-        if (persistable != null) {
-            String tabela = obj.getClass().getSimpleName();
-            Field[] fields = obj.getClass().getDeclaredFields();
-            int count = 0;
-            List<Field> foreignKeys = new ArrayList<>();
-            for (Field field : fields) {
-                // como os atributos são private,
-                // setamos ele como visible
-                field.setAccessible(true);
-                // Se o atributo tem a anotação
-                Column column =
-                        field.getAnnotation(Column.class);
-                if (column != null) {
-                    if (count == 0) {
-                        columns += field.getName() + " " + column.type();
-                    } else {
-                        columns += " , " + field.getName() + " " + column.type();
+        try {
+            if (persistable != null) {
+                String tabela = obj.getClass().getSimpleName();
+                Field[] fields = obj.getClass().getDeclaredFields();
+                int count = 0;
+                List<Field> foreignKeys = new ArrayList<>();
+                for (Field field : fields) {
+                    // como os atributos são private,
+                    // setamos ele como visible
+                    field.setAccessible(true);
+                    // Se o atributo tem a anotação
+                    Column column =
+                            field.getAnnotation(Column.class);
+                    if (column != null) {
+                        if (count == 0) {
+                            columns += field.getName() + " " + column.type();
+                        } else {
+                            columns += " , " + field.getName() + " " + column.type();
 
-                    }
-                    columns += checkAnnotations(field, column.non_null());
-                    if (field.isAnnotationPresent(ForeignKey.class))
-                        foreignKeys.add(field);
-                } else
-                    throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
+                        }
+                        columns += checkAnnotations(field, column.non_null());
+                        if (field.isAnnotationPresent(ForeignKey.class))
+                            foreignKeys.add(field);
+                    } else
+                        throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
 
-                count++;
-            }
-            String sql = "CREATE TABLE " + tabela + " ( "
-                    + columns;
-            for (Field key : foreignKeys) {
-                ForeignKey foreignKey = key.getAnnotation(ForeignKey.class);
-                sql += " , FOREIGN KEY (" + key.getName() + ")" +
-                        " REFERENCES " + foreignKey.reference().getSimpleName() + "(" + key.getName() + ")";
-            }
-            sql += ");";
-            return sql;
-        } else
-            throw new SQLException("This class does not have the table annotation");
+                    count++;
+                }
+                String sql = "CREATE TABLE " + tabela + " ( "
+                        + columns;
+                for (Field key : foreignKeys) {
+                    ForeignKey foreignKey = key.getAnnotation(ForeignKey.class);
+                    sql += " , FOREIGN KEY (" + key.getName() + ")" +
+                            " REFERENCES " + foreignKey.table().getSimpleName() + "(" + foreignKey.column() + ")";
+                }
+                sql += ");";
+                db.execSQL(sql);
+                return "Table create success";
+            } else
+                throw new SQLException("This class does not have the table annotation");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 
     /**
      * Developed by Paulo Iury
      * Method INSERT
+     *
+     * @param obj
      */
-    public boolean insert(Object obj) throws Throwable {
-        SQLiteDatabase write = helperBD.getReadableDatabase();
-        ContentValues values = new ContentValues();
-        Table persistable =
-                obj.getClass().getAnnotation(Table.class);
-        if (persistable != null) {
-            Field[] fields = obj.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                // como os atributos são private,
-                // setamos ele como visible
-                field.setAccessible(true);
-                // Se o atributo tem a anotação
-                if (field.isAnnotationPresent(Column.class)) {
-                    if (!field.isAnnotationPresent(AutoIncrement.class)) {
-                        String value = field.get(obj).toString();
-                        values.put(field.getName(), value);
+    public boolean insert(Object obj) {
+
+        try {
+            SQLiteDatabase write = helperBD.getReadableDatabase();
+            ContentValues values = new ContentValues();
+            Table persistable =
+                    obj.getClass().getAnnotation(Table.class);
+            if (persistable != null) {
+                Field[] fields = obj.getClass().getDeclaredFields();
+                for (Field field : fields) {
+                    // como os atributos são private,
+                    // setamos ele como visible
+                    field.setAccessible(true);
+                    // Se o atributo tem a anotação
+                    if (field.isAnnotationPresent(Column.class)) {
+                        if (!field.isAnnotationPresent(AutoIncrement.class)) {
+                            String value = field.get(obj).toString();
+                            values.put(field.getName(), value);
+                        }
+                    } else {
+                        throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
                     }
-                } else
-                    throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
-            }
-            long result = write.insert(obj.getClass().getSimpleName(), null, values);
-            return result != 1;
-        } else
-            throw new SQLException("This class does not have the table annotation");
+                }
+                long result = write.insert(obj.getClass().getSimpleName(), null, values);
+                return result != -1;
+            } else
+                throw new SQLException("This class does not have the table annotation");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private String checkAnnotations(Field c, boolean not_null) {
@@ -465,14 +516,23 @@ public class SimpleSQL {
      * Developed by Paulo Iury
      * Method DELETE TABLE
      */
-    public String deleteTable(Object obj) throws SQLException {
-        Table persistable =
-                obj.getClass().getAnnotation(Table.class);
-        if (persistable != null) {
-            return "DROP TABLE IF EXISTS " + obj.getClass().getSimpleName();
-        } else
-            throw new SQLException("This class does not have the table annotation");
+    public String deleteTable(Object obj, SQLiteDatabase db) {
 
+        try {
+            Table persistable =
+                    obj.getClass().getAnnotation(Table.class);
+            if (persistable != null) {
+                db.execSQL("DROP TABLE IF EXISTS " + obj.getClass().getSimpleName());
+                return "Table delete sucess";
+            } else
+                throw new SQLException("This class does not have the table annotation");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 
     /**
@@ -537,8 +597,8 @@ public class SimpleSQL {
             return this;
         }
 
-        public DeleteColumn column(String collumnName) {
-            SQLString += collumnName;
+        public DeleteColumn field(String field) {
+            SQLString += field;
             return this;
         }
 
@@ -547,10 +607,10 @@ public class SimpleSQL {
             return this;
         }
 
-        public boolean execute() throws SQLException{
-            SQLiteDatabase escrever = helperBD.getWritableDatabase();
+        public boolean execute() {
+            SQLiteDatabase write = helperBD.getWritableDatabase();
             try {
-                escrever.execSQL("DELETE FROM " + table + " " + SQLString);
+                write.execSQL("DELETE FROM " + table + " " + SQLString);
                 return true;
             } catch (Exception e) {
                 return false;
