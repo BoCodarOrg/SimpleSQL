@@ -55,7 +55,6 @@ public class SimpleSQL {
         private Object typeObject;
 
         /**
-         *
          * @param typeObject
          */
         public Select(Object typeObject) {
@@ -193,13 +192,13 @@ public class SimpleSQL {
             List lstClasses = new ArrayList<>();
             Field[] fields = typeObject.getClass().getDeclaredFields();
             HashMap<String, Object> hashMap = new HashMap<>();
-
             try {
                 Cursor cursor = read.rawQuery(SQLString, null);
                 while (cursor.moveToNext()) {
                     for (Field f : fields) {
                         Object object = checkItem(f, cursor);
-                        hashMap.put(f.getName(), object);
+                        if (object != null)
+                            hashMap.put(f.getName(), object);
                     }
                     String hashJson = new Gson().toJson(hashMap);
                     lstClasses.add(new Gson().fromJson(hashJson, (Type) typeObject.getClass()));
@@ -218,34 +217,38 @@ public class SimpleSQL {
          */
         private Object checkItem(Field field, Cursor cursor) {
             String name = field.getName();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                if (field.getType() == String.class)
-                    return cursor.getString(cursor.getColumnIndex(name));
-                else if (field.getType() == long.class)
-                    return cursor.getLong(cursor.getColumnIndex(name));
-                else if (field.getType() == float.class)
-                    return cursor.getFloat(cursor.getColumnIndex(name));
-                else if (field.getType() == byte[].class)
-                    return cursor.getBlob(cursor.getColumnIndex(name));
-                else if (field.getType() == int.class)
-                    return cursor.getInt(cursor.getColumnIndex(name));
-                else if (field.getType() == short.class)
-                    return cursor.getShort(cursor.getColumnIndex(name));
-
-                switch (cursor.getType(cursor.getColumnIndex(name))) {
-                    case Cursor.FIELD_TYPE_INTEGER:
-                        return cursor.getInt(cursor.getColumnIndex(name));
-                    case Cursor.FIELD_TYPE_FLOAT:
-                        return cursor.getFloat(cursor.getColumnIndex(name));
-                    case Cursor.FIELD_TYPE_STRING:
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    if (field.getType() == String.class)
                         return cursor.getString(cursor.getColumnIndex(name));
-                    case Cursor.FIELD_TYPE_BLOB:
+                    else if (field.getType() == long.class)
+                        return cursor.getLong(cursor.getColumnIndex(name));
+                    else if (field.getType() == float.class)
+                        return cursor.getFloat(cursor.getColumnIndex(name));
+                    else if (field.getType() == byte[].class)
                         return cursor.getBlob(cursor.getColumnIndex(name));
-                    default:
-                        return null;
-                }
-            } else
+                    else if (field.getType() == int.class)
+                        return cursor.getInt(cursor.getColumnIndex(name));
+                    else if (field.getType() == short.class)
+                        return cursor.getShort(cursor.getColumnIndex(name));
+
+                    switch (cursor.getType(cursor.getColumnIndex(name))) {
+                        case Cursor.FIELD_TYPE_INTEGER:
+                            return cursor.getInt(cursor.getColumnIndex(name));
+                        case Cursor.FIELD_TYPE_FLOAT:
+                            return cursor.getFloat(cursor.getColumnIndex(name));
+                        case Cursor.FIELD_TYPE_STRING:
+                            return cursor.getString(cursor.getColumnIndex(name));
+                        case Cursor.FIELD_TYPE_BLOB:
+                            return cursor.getBlob(cursor.getColumnIndex(name));
+                        default:
+                            return null;
+                    }
+                } else
+                    return null;
+            } catch (Exception e) {
                 return null;
+            }
         }
     }
 
@@ -262,7 +265,6 @@ public class SimpleSQL {
         private String[] values, fields;
 
         /**
-         *
          * @param typeObject
          */
         public Update(Object typeObject) {
@@ -272,7 +274,6 @@ public class SimpleSQL {
         }
 
         /**
-         *
          * @param fields
          * @return
          */
@@ -359,7 +360,6 @@ public class SimpleSQL {
         }
 
         /**
-         *
          * @return
          */
         public boolean execute() {
@@ -459,6 +459,7 @@ public class SimpleSQL {
     /**
      * Developed by Paulo Iury
      * Method INSERT
+     *
      * @param obj
      */
     public boolean insert(Object obj) {

@@ -21,7 +21,7 @@ public class Example extends AppCompatActivity {
         simpleSQL.insert(pessoa);
 
         List<Pessoa> list = simpleSQL.selectTable(new Pessoa())
-                .fields(new String[]{"*"})
+                .fields(new String[]{"name"})
                 .execute();
 
     }
