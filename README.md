@@ -8,6 +8,7 @@ Agora vamos mostrar o passo a passo de como utilizar:
 <a href="">v1.0.1</a>  
 <a href="">v1.0.2</a>  
 <a href="">v1.0.3</a>  
+<a href="">v1.0.4</a>  
 
 ### Importando a lib para o projeto:
 ```GRADLLE
@@ -75,10 +76,10 @@ O Processo inicial de criar um banco de dados continua o mesmo, porém, como já
 
 ```JAVA
 public class HelperBD extends SQLiteOpenHelper {
-    static final int DATABASE_VERSION = 1;
-    static final String DATABASE_NAME = "example.db";
+    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "example.db";
     Context context;
-    SimpleSQL simpleSQL;
+    private SimpleSQL simpleSQL;
 
     public HelperBD(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -88,16 +89,13 @@ public class HelperBD extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        try {
-            simpleSQL.create(new Pessoa());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String _return = simpleSQL.create(new Pessoa(),db);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) 
-        onCreate(sqLiteDatabase);
+    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+        String _return = simpleSQL.deleteTable(new Pessoa(),db);
+        onCreate(db);
     }
 
     @Override
@@ -126,61 +124,47 @@ Pessoa p = new Pessoa();
 p.setNome("Alow");
 p.setIdade(12);
 boolean result = false;
-try {
-	result = new SimpleSQL(new HelperBD(this)).insert(p);
-} catch (Throwable throwable) {
-	throwable.printStackTrace();
-}
+result = new SimpleSQL(new HelperBD(this)).insert(p);
 ```
 
 ### SELECT
 Para fazer uma listagem dos registro do banco de dados é bem simples, é só criar ua instancia da classe SimpleSQL e utilizar o método selectTable(Objeto) e montar o select da forma que preferir.
 ```JAVA
 SimpleSQL simpleSql = new SimpleSQL(new HelperBD(this));
- try {
-            simpleSQL.selectTable(new Pessoa())
-                    .fields(new String[]{"*"})
-                    .where()
-                    .collumn("id")
-                    .equals()
-                    .fieldInt(1)
-                    .execute();
- } catch (SQLException e) {
-            e.printStackTrace();
- }
+ 
+List<Pessoa> list = simpleSQL.selectTable(new Pessoa())
+			    .fields(new String[]{"*"})
+			    .where()
+			    .collumn("id")
+			    .equals()
+			    .fieldInt(1)
+			    .execute();
  
 ```
 ### DELETE
 Para remover algum registro da tabela, ainda segue o mesmo padrão dos métodos anteriores
 ```JAVA
- try {
-      simpleSQL.deleteColumn(new Pessoa())
-            .where()
-            .column("id")
-            .equals()
-            .fieldInt(1)
-            .execute();
-} catch (SQLException e) {
-            e.printStackTrace();
-}
+boolean result = simpleSQL.deleteColumn(new Pessoa())
+			.where()
+			.column("id")
+			.equals()
+			.fieldInt(1)
+			.execute();
+
 ```
 ### UPDATE
 Ainda utilizando o mesmo padrão dos anteriores você também pode atualizar os registro do banco de dados, da seguinte forma:  
 ```JAVA
 SimpleSQL simpleSql = new SimpleSQL(new HelperBD(this));
-try {
-       simpleSQL.updateTable(new Pessoa())
-                    .set(new String[]{"nome","idade"})
-                    .values(new String[]{"Novo Nome","Nova Idade"})
-                    .where()
-                    .collumn("id")
-                    .equals()
-                    .fieldInt(1)
-                    .execute()
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
- 
+boolean result = simpleSQL.updateTable(new Pessoa())
+                    	.set(new String[]{"nome","idade"})
+                    	.values(new String[]{"Novo Nome","Nova Idade"})
+                    	.where()
+                    	.collumn("id")
+                    	.equals()
+                    	.fieldInt(1)
+                    	.execute()
+       
 ```
  
 # Desenvolvedores
