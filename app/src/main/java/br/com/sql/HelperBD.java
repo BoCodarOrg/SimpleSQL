@@ -12,26 +12,32 @@ import java.sql.SQLException;
 
 /**
  * Created by Lucas Nascimento on 18/09/2019
- * Copyright (c) 2019 GFX Consultoria
+ * Copyright (c) 2019 P2J
  */
 public class HelperBD extends SQLiteOpenHelper {
     private static final String NAME = "nome_banco.bd";
-    private static final int VERSION = 4;
+    private static final int VERSION = 11;
+    private SimpleSQL simpleSQL;
+
     public HelperBD(@Nullable Context context) {
         super(context, NAME, null, VERSION);
+        simpleSQL = new SimpleSQL(this);
     }
 
     @Override
-    public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        try {
-            sqLiteDatabase.execSQL(new SimpleSQL(this).create(new Pessoa()));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public void onCreate(SQLiteDatabase db) {
+        String retorno = simpleSQL.create(new Pessoa(),db);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        onCreate(sqLiteDatabase);
+    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+        String retorno = simpleSQL.deleteTable(new Pessoa(),db);
+        onCreate(db);
     }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+    }
+
 }

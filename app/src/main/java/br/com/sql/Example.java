@@ -18,16 +18,11 @@ public class Example extends AppCompatActivity {
         SimpleSQL simpleSQL = new SimpleSQL(new HelperBD(this));
         Pessoa pessoa = new Pessoa();
         pessoa.setName("paulo");
-        try {
-            simpleSQL.insert(pessoa);
-            List<Pessoa> list = simpleSQL.selectTable(new Pessoa())
-                    .fields(new String[]{"*"})
-                    .execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
+        simpleSQL.insert(pessoa);
+
+        List<Pessoa> list = simpleSQL.selectTable(new Pessoa())
+                .fields(new String[]{"*"})
+                .execute();
 
     }
 }

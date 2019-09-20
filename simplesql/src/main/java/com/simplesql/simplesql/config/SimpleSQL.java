@@ -2,7 +2,6 @@ package com.simplesql.simplesql.config;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
@@ -23,11 +22,8 @@ import com.simplesql.simplesql.annotations.ForeignKey;
 import com.simplesql.simplesql.annotations.Key;
 import com.simplesql.simplesql.annotations.Table;
 
-/**
- * Developed by Lucas Nascimento
- */
 public class SimpleSQL {
-    private static SQLiteOpenHelper helperBD;
+    private SQLiteOpenHelper helperBD;
 
     public SimpleSQL(SQLiteOpenHelper helperBD) {
         this.helperBD = helperBD;
@@ -58,7 +54,10 @@ public class SimpleSQL {
         private String SQLString;
         private Object typeObject;
 
-
+        /**
+         *
+         * @param typeObject
+         */
         public Select(Object typeObject) {
             this.tableName = typeObject.getClass().getSimpleName();
             this.typeObject = typeObject;
@@ -188,11 +187,7 @@ public class SimpleSQL {
             return this;
         }
 
-        /**
-         * TODO
-         */
-
-        public List execute() throws SQLException {
+        public List execute() {
             SQLiteDatabase read = helperBD.getReadableDatabase();
             SQLString = SQLString + ";";
             List lstClasses = new ArrayList<>();
@@ -211,12 +206,16 @@ public class SimpleSQL {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                return new ArrayList();
             }
-
-
             return lstClasses;
         }
 
+        /**
+         * @param field
+         * @param cursor
+         * @return object
+         */
         private Object checkItem(Field field, Cursor cursor) {
             String name = field.getName();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -230,6 +229,8 @@ public class SimpleSQL {
                     return cursor.getBlob(cursor.getColumnIndex(name));
                 else if (field.getType() == int.class)
                     return cursor.getInt(cursor.getColumnIndex(name));
+                else if (field.getType() == short.class)
+                    return cursor.getShort(cursor.getColumnIndex(name));
 
                 switch (cursor.getType(cursor.getColumnIndex(name))) {
                     case Cursor.FIELD_TYPE_INTEGER:
@@ -260,12 +261,21 @@ public class SimpleSQL {
         private Object value;
         private String[] values, fields;
 
+        /**
+         *
+         * @param typeObject
+         */
         public Update(Object typeObject) {
             this.tableName = typeObject.getClass().getSimpleName();
             this.typeObject = typeObject;
             SQLString = "UPDATE " + tableName;
         }
 
+        /**
+         *
+         * @param fields
+         * @return
+         */
         public Update set(String[] fields) {
             this.fields = fields;
             stringSet = "";
@@ -348,6 +358,10 @@ public class SimpleSQL {
             return this;
         }
 
+        /**
+         *
+         * @return
+         */
         public boolean execute() {
             SQLiteDatabase write = helperBD.getReadableDatabase();
             int i = 0;
@@ -358,7 +372,6 @@ public class SimpleSQL {
                 i++;
             }
             SQLString = SQLString + ";";
-
             try {
                 write.execSQL(SQLString);
                 return true;
@@ -390,78 +403,98 @@ public class SimpleSQL {
      * Developed by Paulo Iury
      * Method CREATE TABLE
      */
-    public String create(Object obj) throws SQLException {
+    public String create(Object obj, SQLiteDatabase db) {
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
         String columns = "";
-        if (persistable != null) {
-            String tabela = obj.getClass().getSimpleName();
-            Field[] fields = obj.getClass().getDeclaredFields();
-            int count = 0;
-            List<Field> foreignKeys = new ArrayList<>();
-            for (Field field : fields) {
-                // como os atributos são private,
-                // setamos ele como visible
-                field.setAccessible(true);
-                // Se o atributo tem a anotação
-                Column column =
-                        field.getAnnotation(Column.class);
-                if (column != null) {
-                    if (count == 0) {
-                        columns += field.getName() + " " + column.type();
-                    } else {
-                        columns += " , " + field.getName() + " " + column.type();
+        try {
+            if (persistable != null) {
+                String tabela = obj.getClass().getSimpleName();
+                Field[] fields = obj.getClass().getDeclaredFields();
+                int count = 0;
+                List<Field> foreignKeys = new ArrayList<>();
+                for (Field field : fields) {
+                    // como os atributos são private,
+                    // setamos ele como visible
+                    field.setAccessible(true);
+                    // Se o atributo tem a anotação
+                    Column column =
+                            field.getAnnotation(Column.class);
+                    if (column != null) {
+                        if (count == 0) {
+                            columns += field.getName() + " " + column.type();
+                        } else {
+                            columns += " , " + field.getName() + " " + column.type();
 
-                    }
-                    columns += checkAnnotations(field, column.non_null());
-                    if (field.isAnnotationPresent(ForeignKey.class))
-                        foreignKeys.add(field);
-                } else
-                    throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
+                        }
+                        columns += checkAnnotations(field, column.non_null());
+                        if (field.isAnnotationPresent(ForeignKey.class))
+                            foreignKeys.add(field);
+                    } else
+                        throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
 
-                count++;
-            }
-            String sql = "CREATE TABLE " + tabela + " ( "
-                    + columns;
-            for (Field key : foreignKeys) {
-                ForeignKey foreignKey = key.getAnnotation(ForeignKey.class);
-                sql += " , FOREIGN KEY (" + key.getName() + ")" +
-                        " REFERENCES " + foreignKey.table().getSimpleName() + "(" + foreignKey.column() + ")";
-            }
-            sql += ");";
-            return sql;
-        } else
-            throw new SQLException("This class does not have the table annotation");
+                    count++;
+                }
+                String sql = "CREATE TABLE " + tabela + " ( "
+                        + columns;
+                for (Field key : foreignKeys) {
+                    ForeignKey foreignKey = key.getAnnotation(ForeignKey.class);
+                    sql += " , FOREIGN KEY (" + key.getName() + ")" +
+                            " REFERENCES " + foreignKey.table().getSimpleName() + "(" + foreignKey.column() + ")";
+                }
+                sql += ");";
+                db.execSQL(sql);
+                return "Table create success";
+            } else
+                throw new SQLException("This class does not have the table annotation");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 
     /**
      * Developed by Paulo Iury
      * Method INSERT
+     * @param obj
      */
-    public boolean insert(Object obj) throws Throwable {
-        SQLiteDatabase write = helperBD.getReadableDatabase();
-        ContentValues values = new ContentValues();
-        Table persistable =
-                obj.getClass().getAnnotation(Table.class);
-        if (persistable != null) {
-            Field[] fields = obj.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                // como os atributos são private,
-                // setamos ele como visible
-                field.setAccessible(true);
-                // Se o atributo tem a anotação
-                if (field.isAnnotationPresent(Column.class)) {
-                    if (!field.isAnnotationPresent(AutoIncrement.class)) {
-                        String value = field.get(obj).toString();
-                        values.put(field.getName(), value);
+    public boolean insert(Object obj) {
+
+        try {
+            SQLiteDatabase write = helperBD.getReadableDatabase();
+            ContentValues values = new ContentValues();
+            Table persistable =
+                    obj.getClass().getAnnotation(Table.class);
+            if (persistable != null) {
+                Field[] fields = obj.getClass().getDeclaredFields();
+                for (Field field : fields) {
+                    // como os atributos são private,
+                    // setamos ele como visible
+                    field.setAccessible(true);
+                    // Se o atributo tem a anotação
+                    if (field.isAnnotationPresent(Column.class)) {
+                        if (!field.isAnnotationPresent(AutoIncrement.class)) {
+                            String value = field.get(obj).toString();
+                            values.put(field.getName(), value);
+                        }
+                    } else {
+                        throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
                     }
-                } else
-                    throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
-            }
-            long result = write.insert(obj.getClass().getSimpleName(), null, values);
-            return result != -1;
-        } else
-            throw new SQLException("This class does not have the table annotation");
+                }
+                long result = write.insert(obj.getClass().getSimpleName(), null, values);
+                return result != -1;
+            } else
+                throw new SQLException("This class does not have the table annotation");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private String checkAnnotations(Field c, boolean not_null) {
@@ -480,14 +513,23 @@ public class SimpleSQL {
      * Developed by Paulo Iury
      * Method DELETE TABLE
      */
-    public String deleteTable(Object obj) throws SQLException {
-        Table persistable =
-                obj.getClass().getAnnotation(Table.class);
-        if (persistable != null) {
-            return "DROP TABLE IF EXISTS " + obj.getClass().getSimpleName();
-        } else
-            throw new SQLException("This class does not have the table annotation");
+    public String deleteTable(Object obj, SQLiteDatabase db) {
 
+        try {
+            Table persistable =
+                    obj.getClass().getAnnotation(Table.class);
+            if (persistable != null) {
+                db.execSQL("DROP TABLE IF EXISTS " + obj.getClass().getSimpleName());
+                return "Table delete sucess";
+            } else
+                throw new SQLException("This class does not have the table annotation");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 
     /**
@@ -563,9 +605,9 @@ public class SimpleSQL {
         }
 
         public boolean execute() {
-            SQLiteDatabase escrever = helperBD.getWritableDatabase();
+            SQLiteDatabase write = helperBD.getWritableDatabase();
             try {
-                escrever.execSQL("DELETE FROM " + table + " " + SQLString);
+                write.execSQL("DELETE FROM " + table + " " + SQLString);
                 return true;
             } catch (Exception e) {
                 return false;
