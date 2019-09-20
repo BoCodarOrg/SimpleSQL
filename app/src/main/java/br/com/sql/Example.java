@@ -18,7 +18,7 @@ public class Example extends AppCompatActivity {
         SimpleSQL simpleSQL = new SimpleSQL(new HelperBD(this));
         Pessoa pessoa = new Pessoa();
         pessoa.setName("paulo");
-        simpleSQL.insert(pessoa);
+        simpleSQL.insert(pessoa).execute(pessoa);
 
         List<Pessoa> list = simpleSQL.selectTable(new Pessoa())
                 .fields(new String[]{"name"})

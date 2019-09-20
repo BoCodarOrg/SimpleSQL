@@ -42,6 +42,10 @@ public class SimpleSQL {
         return new Update(typeObject);
     }
 
+    public Insert insert(Object o){
+        return new Insert(o);
+    }
+
     /**
      * Developed by Lucas Nascimento
      * Method SELECT
@@ -150,33 +154,33 @@ public class SimpleSQL {
             return this;
         }
 
-        public Select innerJoin(){
+        public Select innerJoin() {
             this.innerJoin = true;
-            SQLString = SQLString+" INNER JOIN ";
+            SQLString = SQLString + " INNER JOIN ";
             return this;
         }
 
-        public Select leftJoin(){
+        public Select leftJoin() {
             this.leftJoin = true;
-            SQLString = SQLString+" LEFT JOIN ";
+            SQLString = SQLString + " LEFT JOIN ";
             return this;
         }
 
-        public Select rigthJoin(){
+        public Select rigthJoin() {
             this.rightJoin = true;
-            SQLString = SQLString+" RIGHT JOIN ";
+            SQLString = SQLString + " RIGHT JOIN ";
             return this;
         }
 
-        public Select fullJoin(){
+        public Select fullJoin() {
             this.innerJoin = true;
-            SQLString = SQLString+" FULL JOIN ";
+            SQLString = SQLString + " FULL JOIN ";
             return this;
         }
 
-        public Select on(){
+        public Select on() {
             this.on = true;
-            SQLString = SQLString+" ON ";
+            SQLString = SQLString + " ON ";
             return this;
         }
 
@@ -259,7 +263,7 @@ public class SimpleSQL {
      * Method UPDATE
      */
 
-    public class Update{
+    public class Update {
         private Object typeObject;
         private String tableName, field, writeSQL, column, table, stringSet;
         private String SQLString;
@@ -302,30 +306,30 @@ public class SimpleSQL {
             return this;
         }
 
-        public Update equals(){
-            SQLString = SQLString +" = ";
+        public Update equals() {
+            SQLString = SQLString + " = ";
             return this;
         }
 
-        public Update or(){
-            SQLString = SQLString+" OR ";
+        public Update or() {
+            SQLString = SQLString + " OR ";
             return this;
         }
 
-        public Update and(){
-            SQLString = SQLString+" AND ";
+        public Update and() {
+            SQLString = SQLString + " AND ";
             return this;
         }
 
-        public Update column(String name){
+        public Update column(String name) {
             this.column = name;
-            SQLString = SQLString +" "+name+" ";
+            SQLString = SQLString + " " + name + " ";
             return this;
         }
 
         public Update fieldString(String value) {
             this.field = field;
-            SQLString = SQLString + "\""+value+"\"";
+            SQLString = SQLString + "\"" + value + "\"";
             return this;
         }
 
@@ -461,44 +465,72 @@ public class SimpleSQL {
     /**
      * Developed by Paulo Iury
      * Method INSERT
-     *
-     * @param obj
      */
-    public boolean insert(Object obj) {
+    public class Insert {
+        private Object object;
+        private ContentValues values;
 
-        try {
-            SQLiteDatabase write = helperBD.getReadableDatabase();
-            ContentValues values = new ContentValues();
-            Table persistable =
-                    obj.getClass().getAnnotation(Table.class);
-            if (persistable != null) {
-                Field[] fields = obj.getClass().getDeclaredFields();
-                for (Field field : fields) {
-                    // como os atributos são private,
-                    // setamos ele como visible
-                    field.setAccessible(true);
-                    // Se o atributo tem a anotação
-                    if (field.isAnnotationPresent(Column.class)) {
-                        if (!field.isAnnotationPresent(AutoIncrement.class)) {
-                            String value = field.get(obj).toString();
-                            values.put(field.getName(), value);
+        public Insert(Object obj) {
+            this.object = obj;
+            values = new ContentValues();
+        }
+
+        public boolean execute(Object obj) {
+
+            try {
+                SQLiteDatabase write = helperBD.getReadableDatabase();
+                Table persistable =
+                        obj.getClass().getAnnotation(Table.class);
+                if (persistable != null) {
+                    Field[] fields = obj.getClass().getDeclaredFields();
+                    for (Field field : fields) {
+                        // como os atributos são private,
+                        // setamos ele como visible
+                        field.setAccessible(true);
+                        // Se o atributo tem a anotação
+                        Column column = field.getAnnotation(Column.class);
+                        if (column != null) {
+                            if (!field.isAnnotationPresent(AutoIncrement.class) && field.get(obj) != null) {
+                                checkObject(field, obj);
+                            }
+                        } else {
+                            throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
                         }
-                    } else {
-                        throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
                     }
-                }
-                long result = write.insert(obj.getClass().getSimpleName(), null, values);
-                return result != -1;
-            } else
-                throw new SQLException("This class does not have the table annotation");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+                    long result = write.insert(obj.getClass().getSimpleName(), null, values);
+                    return result != -1;
+                } else
+                    throw new SQLException("This class does not have the table annotation");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+
+        }
+
+        private void checkObject(Field field, Object obj) {
+            try {
+                if (field.get(obj).getClass() == String.class)
+                    values.put(field.getName(), (String) field.get(obj));
+                else if (field.get(obj).getClass() == long.class)
+                    values.put(field.getName(), (long) field.get(obj));
+                else if (field.get(obj).getClass() == float.class)
+                    values.put(field.getName(), (float) field.get(obj));
+                else if (field.get(obj).getClass() == byte[].class)
+                    values.put(field.getName(), (byte[]) field.get(obj));
+                else if (field.get(obj).getClass() == int.class)
+                    values.put(field.getName(), (int) field.get(obj));
+                else if (field.get(obj).getClass() == short.class)
+                    values.put(field.getName(), (short) field.get(obj));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
     }
+
 
     private String checkAnnotations(Field c, boolean not_null) {
         String annotations = "";
