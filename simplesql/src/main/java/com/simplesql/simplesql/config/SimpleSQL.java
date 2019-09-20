@@ -449,7 +449,7 @@ public class SimpleSQL {
             throw new SQLException("This class does not have the table annotation");
     }
 
-    private static String checkAnnotations(Field c, boolean not_null) {
+    private String checkAnnotations(Field c, boolean not_null) {
         String annotations = "";
         if (c.isAnnotationPresent(Key.class))
             annotations += " PRIMARY KEY";
@@ -465,7 +465,7 @@ public class SimpleSQL {
      * Developed by Paulo Iury
      * Method DELETE TABLE
      */
-    public static String deleteTable(Object obj) throws SQLException {
+    public String deleteTable(Object obj) throws SQLException {
         Table persistable =
                 obj.getClass().getAnnotation(Table.class);
         if (persistable != null) {
@@ -537,8 +537,8 @@ public class SimpleSQL {
             return this;
         }
 
-        public DeleteColumn field(String field) {
-            SQLString += field;
+        public DeleteColumn column(String collumnName) {
+            SQLString += collumnName;
             return this;
         }
 
@@ -547,7 +547,7 @@ public class SimpleSQL {
             return this;
         }
 
-        public boolean execute() {
+        public boolean execute() throws SQLException{
             SQLiteDatabase escrever = helperBD.getWritableDatabase();
             try {
                 escrever.execSQL("DELETE FROM " + table + " " + SQLString);
