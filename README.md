@@ -8,11 +8,12 @@ Agora vamos mostrar o passo a passo de como utilizar:
 <a href="">v1.0.1</a>  
 <a href="">v1.0.2</a>  
 <a href="">v1.0.3</a>  
-<a href="">v1.0.4</a>  
+<a href="">v1.0.4</a>
+<a href="">v1.0.5</a>
 
 ### Importando a lib para o projeto:
 ```groovy
-implementation 'com.github.p2jorg:simplesql:{$last_version}'
+implementation 'com.github.p2jorg:simplesql:1.0.5'
 ```
 ##### *Observação - Caso você não tenha o JitPack, adicione em seu module project a linha de código com o comentário:
 ```groovy
