@@ -515,15 +515,15 @@ public class SimpleSQL {
             try {
                 if (field.get(obj).getClass() == String.class)
                     values.put(field.getName(), (String) field.get(obj));
-                else if (field.get(obj).getClass() == long.class)
+                else if (field.get(obj).getClass() == Long.class)
                     values.put(field.getName(), (long) field.get(obj));
-                else if (field.get(obj).getClass() == float.class)
+                else if (field.get(obj).getClass() == Float.class)
                     values.put(field.getName(), (float) field.get(obj));
                 else if (field.get(obj).getClass() == byte[].class)
                     values.put(field.getName(), (byte[]) field.get(obj));
-                else if (field.get(obj).getClass() == int.class)
+                else if (field.get(obj).getClass() == Integer.class)
                     values.put(field.getName(), (int) field.get(obj));
-                else if (field.get(obj).getClass() == short.class)
+                else if (field.get(obj).getClass() == Short.class)
                     values.put(field.getName(), (short) field.get(obj));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
