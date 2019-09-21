@@ -4,18 +4,13 @@ Essa Biblioteca tem como maior função facilitar o uso do SQLite para o android
 
 Agora vamos mostrar o passo a passo de como utilizar:
 ### Versões
-<a href="">v1.0.0</a>  
-<a href="">v1.0.1</a>  
-<a href="">v1.0.2</a>  
-<a href="">v1.0.3</a>  
-<a href="">v1.0.4</a>  
-<a href="">v1.0.5</a>  
-<a href="">v1.0.6</a>  
-<a href="">v1.0.7</a>  
+<a href="">v1.0.10</a>  
+<a href="">v1.0.12</a>  
+<a href="">v1.0.13</a> 
 
 ### Importando a lib para o projeto:
 ```groovy
-implementation 'com.github.p2jorg:simplesql:1.0.5'
+implementation 'com.github.p2jorg:simplesql:1.0.13'
 ```
 ##### *Observação - Caso você não tenha o JitPack, adicione em seu module project a linha de código com o comentário:
 ```groovy
@@ -123,7 +118,7 @@ Pessoa p = new Pessoa();
 p.setNome("Alow");
 p.setIdade(12);
 boolean result = false;
-result = new SimpleSQL(new HelperBD(this)).insert(p);
+result = new SimpleSQL(new HelperBD(this)).insert(pessoa).execute();
 ```
 
 ### SELECT
