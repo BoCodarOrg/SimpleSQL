@@ -465,6 +465,7 @@ public class SimpleSQL {
     /**
      * Developed by Paulo Iury
      * Method INSERT
+     *
      */
     public class Insert {
         private Object obj;
@@ -490,15 +491,13 @@ public class SimpleSQL {
                         // Se o atributo tem a anotação
                         Column column = field.getAnnotation(Column.class);
                         if (column != null) {
-                            if (!field.isAnnotationPresent(AutoIncrement.class) && field.get(obj) != null) {
+                            if (!field.isAnnotationPresent(AutoIncrement.class) && field.get(obj) != null)
                                 checkObject(field, obj);
-                            }
-                        } else {
+                        } else
                             throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
-                        }
                     }
                     long result = write.insert(obj.getClass().getSimpleName(), null, values);
-                    return result != -1;
+                    return result > -1;
                 } else
                     throw new SQLException("This class does not have the table annotation");
             } catch (SQLException e) {
