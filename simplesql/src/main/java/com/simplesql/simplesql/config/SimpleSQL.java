@@ -467,15 +467,15 @@ public class SimpleSQL {
      * Method INSERT
      */
     public class Insert {
-        private Object object;
+        private Object obj;
         private ContentValues values;
 
         public Insert(Object obj) {
-            this.object = obj;
+            this.obj = obj;
             values = new ContentValues();
         }
 
-        public boolean execute(Object obj) {
+        public boolean execute() {
 
             try {
                 SQLiteDatabase write = helperBD.getReadableDatabase();
