@@ -30,7 +30,32 @@ public class SimpleSQL {
     }
 
     public Select selectTable(Object typeObject) {
-        return new Select(typeObject);
+        return new Select(typeObject, "SELECT");
+    }
+
+    public Select selectSingle(Object typeObject) {
+        return new Select(typeObject, "SINGLE");
+    }
+
+    /**
+     * incompleto
+     */
+    public Select selectCount(Object typeObject) {
+        return new Select(typeObject, "COUNT");
+    }
+
+    /**
+     * incompleto
+     */
+    public Select selectMax(Object typeObject) {
+        return new Select(typeObject, "MAX");
+    }
+
+    /**
+     * incompleto
+     */
+    public Select selectMin(Object typeObject) {
+        return new Select(typeObject, "MIN");
     }
 
     public DeleteColumn deleteColumn(Object objectType) {
@@ -38,12 +63,11 @@ public class SimpleSQL {
     }
 
 
-
     public Update updateTable(Object typeObject) {
         return new Update(typeObject);
     }
 
-    public Insert insert(Object o){
+    public Insert insert(Object o) {
         return new Insert(o);
     }
 
@@ -61,17 +85,40 @@ public class SimpleSQL {
 
         /**
          * @param typeObject
+         * @param type
          */
-        public Select(Object typeObject) {
+        public Select(Object typeObject, String type) {
             this.tableName = typeObject.getClass().getSimpleName();
             this.typeObject = typeObject;
-            SQLString = "SELECT ";
+            switch (type) {
+                case "COUNT":
+                    SQLString = "SELECT COUNT(*)";
+                    break;
+                case "SINGLE":
+                    SQLString = "SELECT SINGLE ";
+                    break;
+                case "MAX":
+                    SQLString = "SELECT MAX(*)";
+                    break;
+                case "MIN":
+                    SQLString = "SELECT MIN(*)";
+                    break;
+                default:
+                    SQLString = "SELECT ";
+
+
+            }
         }
 
 
         public Select column(String column) {
             this.column = column;
             SQLString = SQLString + column;
+            return this;
+        }
+
+        public Select limit(int number) {
+            SQLString = SQLString + " LIMIT " + value;
             return this;
         }
 
@@ -124,6 +171,7 @@ public class SimpleSQL {
             SQLString = SQLString + " " + table + " ";
             return this;
         }
+
 
         public Select equals() {
             this.equals = true;
@@ -466,7 +514,6 @@ public class SimpleSQL {
     /**
      * Developed by Paulo Iury
      * Method INSERT
-     *
      */
     public class Insert {
         private Object obj;
@@ -576,7 +623,7 @@ public class SimpleSQL {
 
         public DeleteColumn(Object objectType) {
             this.table = objectType.getClass().getSimpleName();
-            this.SQLString = "DELETE FROM "+table;
+            this.SQLString = "DELETE FROM " + table;
         }
 
         public DeleteColumn equals() {
@@ -605,7 +652,7 @@ public class SimpleSQL {
         }
 
         public DeleteColumn fieldString(String value) {
-            SQLString += "\""+value+"\"";
+            SQLString += "\"" + value + "\"";
             return this;
         }
 
