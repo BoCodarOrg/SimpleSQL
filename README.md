@@ -138,7 +138,7 @@ List<Pessoa> list = simpleSQL.selectTable(new Pessoa())
 ### DELETE
 Para remover algum registro da tabela, ainda segue o mesmo padrão dos métodos anteriores
 ```JAVA
-boolean result = simpleSQL.deleteColumn(new Pessoa())
+boolean result = simpleSQL.deleteColumn("Nome da tabela")
 			.where()
 			.column("id")
 			.equals()
