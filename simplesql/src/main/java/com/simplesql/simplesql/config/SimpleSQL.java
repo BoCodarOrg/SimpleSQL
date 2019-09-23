@@ -83,7 +83,7 @@ public class SimpleSQL {
         private String SQLString;
         private Object typeObject;
         private static final String KEY_FUNCTION_PARAMETER = "%column";
-
+        private String type;
         /**
          * @param typeObject
          * @param type
@@ -111,8 +111,8 @@ public class SimpleSQL {
                 default:
                     SQLString = "SELECT ";
 
-
             }
+            this.type = type;
         }
 
 
@@ -244,7 +244,7 @@ public class SimpleSQL {
             return this;
         }
 
-        public List execute() {
+        public Object execute() {
             SQLiteDatabase read = helperBD.getReadableDatabase();
             if (functionParameter) {
                 if (fields[0] == null || fields[0].equals(""))
@@ -256,7 +256,11 @@ public class SimpleSQL {
             Field[] fields = typeObject.getClass().getDeclaredFields();
             HashMap<String, Object> hashMap = new HashMap<>();
             try {
-                Cursor cursor = read.rawQuery(SQLString, null);
+                Cursor  cursor = read.rawQuery(SQLString, null);
+                if(type.equals("COUNT")){
+                    cursor.moveToFirst();
+                    return cursor.getInt(0);
+                }
                 while (cursor.moveToNext()) {
                     for (Field f : fields) {
                         Object object = checkItem(f, cursor);
