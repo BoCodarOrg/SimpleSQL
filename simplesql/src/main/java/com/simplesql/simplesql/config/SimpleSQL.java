@@ -33,8 +33,8 @@ public class SimpleSQL {
         return new Select(typeObject);
     }
 
-    public DeleteColumn deleteColumn(String tableName) {
-        return new DeleteColumn(tableName);
+    public DeleteColumn deleteColumn(Object objectType) {
+        return new DeleteColumn(objectType);
     }
 
 
@@ -99,14 +99,14 @@ public class SimpleSQL {
             return this;
         }
 
-        public Select fieldFloat(int value) {
+        public Select fieldFloat(float value) {
             this.value = value;
             SQLString = SQLString + value;
 
             return this;
         }
 
-        public Select fieldBoolean(int value) {
+        public Select fieldBoolean(boolean value) {
             this.value = value;
             SQLString = SQLString + value;
 
@@ -346,14 +346,14 @@ public class SimpleSQL {
             return this;
         }
 
-        public Update fieldFloat(int value) {
+        public Update fieldFloat(float value) {
             this.value = value;
             SQLString = SQLString + value;
 
             return this;
         }
 
-        public Update fieldBoolean(int value) {
+        public Update fieldBoolean(boolean value) {
             this.value = value;
             SQLString = SQLString + value;
 
@@ -574,9 +574,9 @@ public class SimpleSQL {
     public class DeleteColumn {
         private String table, SQLString;
 
-        public DeleteColumn(String tableName) {
-            this.table = tableName;
-            this.SQLString = "DELETE FROM "+tableName;
+        public DeleteColumn(Object objectType) {
+            this.table = objectType.getClass().getSimpleName();
+            this.SQLString = "DELETE FROM "+table;
         }
 
         public DeleteColumn equals() {
@@ -619,12 +619,12 @@ public class SimpleSQL {
             return this;
         }
 
-        public DeleteColumn fieldFloat(int value) {
+        public DeleteColumn fieldFloat(float value) {
             SQLString += value;
             return this;
         }
 
-        public DeleteColumn fieldBoolean(int value) {
+        public DeleteColumn fieldBoolean(boolean value) {
             SQLString += value;
             return this;
         }
