@@ -7,6 +7,7 @@ Agora vamos mostrar o passo a passo de como utilizar:
 <a href="">v1.0.10</a>  
 <a href="">v1.0.12</a>  
 <a href="">v1.0.13</a> 
+<a href="">v1.0.14</a> 
 
 ### Importando a lib para o projeto:
 ```groovy
@@ -138,7 +139,7 @@ List<Pessoa> list = simpleSQL.selectTable(new Pessoa())
 ### DELETE
 Para remover algum registro da tabela, ainda segue o mesmo padrão dos métodos anteriores
 ```JAVA
-boolean result = simpleSQL.deleteColumn(new Pessoa())
+boolean result = simpleSQL.deleteColumn("Nome da tabela")
 			.where()
 			.column("id")
 			.equals()
