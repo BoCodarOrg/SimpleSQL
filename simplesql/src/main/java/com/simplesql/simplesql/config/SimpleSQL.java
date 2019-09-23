@@ -249,7 +249,7 @@ public class SimpleSQL {
             if (functionParameter) {
                 if (fields[0] == null || fields[0].equals(""))
                     columnFunction = "*";
-                SQLString = SQLString.replace(KEY_FUNCTION_PARAMETER, fields[0]);
+                SQLString = SQLString.replace("*","").replace(KEY_FUNCTION_PARAMETER, fields[0]);
             }
             SQLString = SQLString + ";";
             List lstClasses = new ArrayList<>();
