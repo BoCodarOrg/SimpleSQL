@@ -33,9 +33,10 @@ public class SimpleSQL {
         return new Select(typeObject);
     }
 
-    public DeleteColumn deleteColumn(Object o) {
-        return new DeleteColumn(o);
+    public DeleteColumn deleteColumn(String tableName) {
+        return new DeleteColumn(tableName);
     }
+
 
 
     public Update updateTable(Object typeObject) {
@@ -573,9 +574,9 @@ public class SimpleSQL {
     public class DeleteColumn {
         private String table, SQLString;
 
-        public DeleteColumn(Object o) {
-            this.table = o.getClass().getSimpleName();
-            this.SQLString = "";
+        public DeleteColumn(String tableName) {
+            this.table = tableName;
+            this.SQLString = "DELETE FROM "+tableName;
         }
 
         public DeleteColumn equals() {
@@ -604,7 +605,7 @@ public class SimpleSQL {
         }
 
         public DeleteColumn fieldString(String value) {
-            SQLString += value;
+            SQLString += "\""+value+"\"";
             return this;
         }
 
@@ -641,7 +642,7 @@ public class SimpleSQL {
         public boolean execute() {
             SQLiteDatabase write = helperBD.getWritableDatabase();
             try {
-                write.execSQL("DELETE FROM " + table + " " + SQLString);
+                write.execSQL(SQLString);
                 return true;
             } catch (Exception e) {
                 return false;
