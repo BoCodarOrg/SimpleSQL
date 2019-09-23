@@ -38,21 +38,21 @@ public class SimpleSQL {
     }
 
     /**
-     * incompleto
+     * COUNT(campo)
      */
     public Select selectCount(Object typeObject) {
         return new Select(typeObject, "COUNT");
     }
 
     /**
-     * incompleto
+     * MAX(campo)
      */
     public Select selectMax(Object typeObject) {
         return new Select(typeObject, "MAX");
     }
 
     /**
-     * incompleto
+     * MIN(campo)
      */
     public Select selectMin(Object typeObject) {
         return new Select(typeObject, "MIN");
@@ -76,12 +76,13 @@ public class SimpleSQL {
      * Method SELECT
      */
     public class Select {
-        private String tableName, field, writeSQL, column, table;
+        private String tableName, field, writeSQL, column, table, columnFunction;
         private String[] fields;
-        private boolean where, equals, between, or, on, and, like, innerJoin, leftJoin, rightJoin, fullJoin;
+        private boolean where, equals, between, or, on, and, like, innerJoin, leftJoin, rightJoin, fullJoin, functionParameter;
         private Object value;
         private String SQLString;
         private Object typeObject;
+        private static final String KEY_FUNCTION_PARAMETER = "%column";
 
         /**
          * @param typeObject
@@ -92,16 +93,20 @@ public class SimpleSQL {
             this.typeObject = typeObject;
             switch (type) {
                 case "COUNT":
-                    SQLString = "SELECT COUNT(*)";
+                    SQLString = "SELECT COUNT(" + KEY_FUNCTION_PARAMETER + ")";
+                    this.functionParameter = true;
                     break;
                 case "SINGLE":
                     SQLString = "SELECT SINGLE ";
+                    this.functionParameter = true;
                     break;
                 case "MAX":
-                    SQLString = "SELECT MAX(*)";
+                    SQLString = "SELECT MAX(" + KEY_FUNCTION_PARAMETER + ")";
+                    this.functionParameter = true;
                     break;
                 case "MIN":
-                    SQLString = "SELECT MIN(*)";
+                    SQLString = "SELECT MIN(" + KEY_FUNCTION_PARAMETER + ")";
+                    this.functionParameter = true;
                     break;
                 default:
                     SQLString = "SELECT ";
@@ -117,8 +122,13 @@ public class SimpleSQL {
             return this;
         }
 
+        public Select functionParameter(String column) {
+            this.columnFunction = column;
+            return this;
+        }
+
         public Select limit(int number) {
-            SQLString = SQLString + " LIMIT " + value;
+            SQLString = SQLString + " LIMIT " + number;
             return this;
         }
 
@@ -130,7 +140,7 @@ public class SimpleSQL {
 
         public Select fieldString(String value) {
             this.field = field;
-            SQLString = SQLString + value;
+            SQLString = SQLString + "'" + value + "'";
             return this;
         }
 
@@ -241,6 +251,9 @@ public class SimpleSQL {
 
         public List execute() {
             SQLiteDatabase read = helperBD.getReadableDatabase();
+            if (functionParameter) {
+                SQLString.replace(KEY_FUNCTION_PARAMETER, columnFunction);
+            }
             SQLString = SQLString + ";";
             List lstClasses = new ArrayList<>();
             Field[] fields = typeObject.getClass().getDeclaredFields();
