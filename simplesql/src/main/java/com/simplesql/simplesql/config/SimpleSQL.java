@@ -122,11 +122,6 @@ public class SimpleSQL {
             return this;
         }
 
-        public Select functionParameter(String column) {
-            this.columnFunction = column;
-            return this;
-        }
-
         public Select limit(int number) {
             SQLString = SQLString + " LIMIT " + number;
             return this;
@@ -254,7 +249,7 @@ public class SimpleSQL {
             if (functionParameter) {
                 if (columnFunction == null || columnFunction.equals(""))
                     columnFunction = "*";
-                SQLString.replace(KEY_FUNCTION_PARAMETER, columnFunction);
+                SQLString = SQLString.replace(KEY_FUNCTION_PARAMETER, fields[0]);
             }
             SQLString = SQLString + ";";
             List lstClasses = new ArrayList<>();
