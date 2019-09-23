@@ -249,7 +249,7 @@ public class SimpleSQL {
             if (functionParameter) {
                 if (fields[0] == null || fields[0].equals(""))
                     columnFunction = "*";
-                SQLString = SQLString.replace("*","").replace(KEY_FUNCTION_PARAMETER, fields[0]);
+                    SQLString = SQLString.replace(fields[0],"").replace(KEY_FUNCTION_PARAMETER, (CharSequence) getString(fields[0]));
             }
             SQLString = SQLString + ";";
             List lstClasses = new ArrayList<>();
@@ -454,7 +454,7 @@ public class SimpleSQL {
     }
 
     public Object getString(String string) {
-        String s = "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;a;b;c;d;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z;\\;\\";
+        String s = "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;a;b;c;d;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z;\\;\\*";
         String[] arrays = s.split(";");
         for (String array : arrays) {
             if (string.contains(array)) {
