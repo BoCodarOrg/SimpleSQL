@@ -252,7 +252,7 @@ public class SimpleSQL {
         public List execute() {
             SQLiteDatabase read = helperBD.getReadableDatabase();
             if (functionParameter) {
-                if (columnFunction.equals("") || columnFunction == null)
+                if (columnFunction == null || columnFunction.equals(""))
                     columnFunction = "*";
                 SQLString.replace(KEY_FUNCTION_PARAMETER, columnFunction);
             }
