@@ -6,12 +6,13 @@ Agora vamos mostrar o passo a passo de como utilizar:
 ### Versões
 <a href="">v1.0.10</a>  
 <a href="">v1.0.12</a>  
-<a href="">v1.0.13</a> 
-<a href="">v1.0.14</a> 
+<a href="">v1.0.13</a>  
+<a href="">v1.0.14</a>  
+<a href="">v1.0.15</a>  
 
 ### Importando a lib para o projeto:
 ```groovy
-implementation 'com.github.p2jorg:simplesql:1.0.13'
+implementation 'com.github.p2jorg:simplesql:1.0.15'
 ```
 ##### *Observação - Caso você não tenha o JitPack, adicione em seu module project a linha de código com o comentário:
 ```groovy
