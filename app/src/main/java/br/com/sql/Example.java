@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import com.simplesql.simplesql.config.SimpleSQL;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class Example extends AppCompatActivity {
@@ -22,9 +21,7 @@ public class Example extends AppCompatActivity {
         pessoa.setPhone("1231789201");
         boolean result = simpleSQL.insert(pessoa).execute();
 
-
-
-        List<Pessoa> list = simpleSQL.selectTable(new Pessoa())
+        List<Pessoa> list = (List<Pessoa>) simpleSQL.selectTable(new Pessoa())
                 .fields(new String[]{"*"})
                 .execute();
     }
