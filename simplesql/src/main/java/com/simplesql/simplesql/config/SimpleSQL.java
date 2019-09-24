@@ -83,6 +83,7 @@ public class SimpleSQL {
         private String SQLString;
         private Object typeObject;
         private static final String KEY_FUNCTION_PARAMETER = "%column";
+        private static final String KEY_COLIMN_NAME_MAX = "value_function";
         private String type;
         /**
          * @param typeObject
@@ -101,7 +102,7 @@ public class SimpleSQL {
                     this.functionParameter = true;
                     break;
                 case "MAX":
-                    SQLString = "SELECT MAX(" + KEY_FUNCTION_PARAMETER + ")";
+                    SQLString = "SELECT MAX(" + KEY_FUNCTION_PARAMETER + ") INTO "+KEY_COLIMN_NAME_MAX;
                     this.functionParameter = true;
                     break;
                 case "MIN":
@@ -261,13 +262,20 @@ public class SimpleSQL {
                     cursor.moveToFirst();
                     return cursor.getInt(0);
                 }else if(type.equals("MAX") || type.equals("MIN")){
-                    if(cursor.moveToFirst()){
-                        for(Field f:fields){
-                            Object object = checkItem(f, cursor);
-                            if (object != null)
-                                hashMap.put(f.getName(), object);
+                    if(cursor !=null){
+                        cursor.moveToFirst();
+                        while (!cursor.isAfterLast()) {
+                            for (Field f : fields) {
+                                Object object = checkItem(f, cursor);
+                                if (object != null)
+                                    hashMap.put(f.getName(), object);
+                            }
+                            String hashJson = new Gson().toJson(hashMap);
+                            lstClasses.add(new Gson().fromJson(hashJson, (Type) typeObject.getClass()));
                         }
                     }
+                    cursor.close();
+                    return lstClasses;
                 }
                 while (cursor.moveToNext()) {
                     for (Field f : fields) {
