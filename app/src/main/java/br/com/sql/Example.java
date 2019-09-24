@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.simplesql.simplesql.config.SimpleSQL;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class Example extends AppCompatActivity {

@@ -85,7 +85,8 @@ public class SimpleSQL {
         private String SQLString;
         private Object typeObject;
         private static final String KEY_FUNCTION_PARAMETER = "%column";
-
+        private static final String KEY_COLIMN_NAME_MAX = "value_function";
+        private String type;
         /**
          * @param typeObject
          * @param type
@@ -103,7 +104,7 @@ public class SimpleSQL {
                     this.functionParameter = true;
                     break;
                 case "MAX":
-                    SQLString = "SELECT MAX(" + KEY_FUNCTION_PARAMETER + ")";
+                    SQLString = "SELECT MAX(" + KEY_FUNCTION_PARAMETER + ") INTO "+KEY_COLIMN_NAME_MAX;
                     this.functionParameter = true;
                     break;
                 case "MIN":
@@ -113,8 +114,8 @@ public class SimpleSQL {
                 default:
                     SQLString = "SELECT ";
 
-
             }
+            this.type = type;
         }
 
 
@@ -246,19 +247,38 @@ public class SimpleSQL {
             return this;
         }
 
-        public List execute() {
+        public Object execute() {
             SQLiteDatabase read = helperBD.getReadableDatabase();
             if (functionParameter) {
                 if (fields[0] == null || fields[0].equals(""))
                     columnFunction = "*";
-                SQLString = SQLString.replace("*", "").replace(KEY_FUNCTION_PARAMETER, fields[0]);
+                    SQLString = SQLString.replace(fields[0],"").replace(KEY_FUNCTION_PARAMETER, (CharSequence) getString(fields[0]));
             }
             SQLString = SQLString + ";";
             List lstClasses = new ArrayList<>();
             Field[] fields = typeObject.getClass().getDeclaredFields();
             HashMap<String, Object> hashMap = new HashMap<>();
             try {
-                Cursor cursor = read.rawQuery(SQLString, null);
+                Cursor  cursor = read.rawQuery(SQLString, null);
+                if(type.equals("COUNT")){
+                    cursor.moveToFirst();
+                    return cursor.getInt(0);
+                }else if(type.equals("MAX") || type.equals("MIN")){
+                    if(cursor !=null){
+                        cursor.moveToFirst();
+                        while (!cursor.isAfterLast()) {
+                            for (Field f : fields) {
+                                Object object = checkItem(f, cursor);
+                                if (object != null)
+                                    hashMap.put(f.getName(), object);
+                            }
+                            String hashJson = new Gson().toJson(hashMap);
+                            lstClasses.add(new Gson().fromJson(hashJson, (Type) typeObject.getClass()));
+                        }
+                    }
+                    cursor.close();
+                    return lstClasses;
+                }
                 while (cursor.moveToNext()) {
                     for (Field f : fields) {
                         Object object = checkItem(f, cursor);
@@ -453,7 +473,7 @@ public class SimpleSQL {
     }
 
     public Object getString(String string) {
-        String s = "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;a;b;c;d;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z;\\;\\";
+        String s = "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;a;b;c;d;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z;\\;\\*";
         String[] arrays = s.split(";");
         for (String array : arrays) {
             if (string.contains(array)) {
