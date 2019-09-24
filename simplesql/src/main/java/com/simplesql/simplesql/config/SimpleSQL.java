@@ -260,6 +260,14 @@ public class SimpleSQL {
                 if(type.equals("COUNT")){
                     cursor.moveToFirst();
                     return cursor.getInt(0);
+                }else if(type.equals("MAX") || type.equals("MIN")){
+                    if(cursor.moveToFirst()){
+                        for(Field f:fields){
+                            Object object = checkItem(f, cursor);
+                            if (object != null)
+                                hashMap.put(f.getName(), object);
+                        }
+                    }
                 }
                 while (cursor.moveToNext()) {
                     for (Field f : fields) {
