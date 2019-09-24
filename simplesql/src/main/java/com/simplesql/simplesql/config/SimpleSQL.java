@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -21,6 +22,7 @@ import com.simplesql.simplesql.annotations.Column;
 import com.simplesql.simplesql.annotations.ForeignKey;
 import com.simplesql.simplesql.annotations.Key;
 import com.simplesql.simplesql.annotations.Table;
+import com.simplesql.simplesql.annotations.Unique;
 
 public class SimpleSQL {
     private SQLiteOpenHelper helperBD;
@@ -249,7 +251,7 @@ public class SimpleSQL {
             if (functionParameter) {
                 if (fields[0] == null || fields[0].equals(""))
                     columnFunction = "*";
-                SQLString = SQLString.replace("*","").replace(KEY_FUNCTION_PARAMETER, fields[0]);
+                SQLString = SQLString.replace("*", "").replace(KEY_FUNCTION_PARAMETER, fields[0]);
             }
             SQLString = SQLString + ";";
             List lstClasses = new ArrayList<>();
@@ -266,6 +268,7 @@ public class SimpleSQL {
                     String hashJson = new Gson().toJson(hashMap);
                     lstClasses.add(new Gson().fromJson(hashJson, (Type) typeObject.getClass()));
                 }
+                cursor.close();
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ArrayList();
@@ -486,12 +489,10 @@ public class SimpleSQL {
                     Column column =
                             field.getAnnotation(Column.class);
                     if (column != null) {
-                        if (count == 0) {
+                        if (count == 0)
                             columns += field.getName() + " " + column.type();
-                        } else {
+                        else
                             columns += " , " + field.getName() + " " + column.type();
-
-                        }
                         columns += checkAnnotations(field, column.non_null());
                         if (field.isAnnotationPresent(ForeignKey.class))
                             foreignKeys.add(field);
@@ -508,6 +509,7 @@ public class SimpleSQL {
                             " REFERENCES " + foreignKey.table().getSimpleName() + "(" + foreignKey.column() + ")";
                 }
                 sql += ");";
+                foreignKeys.clear();
                 db.execSQL(sql);
                 return "Table create success";
             } else
@@ -528,16 +530,20 @@ public class SimpleSQL {
     public class Insert {
         private Object obj;
         private ContentValues values;
+        private SQLiteDatabase write;
+        private SQLiteDatabase read;
+        private String table;
 
         public Insert(Object obj) {
             this.obj = obj;
+            table = obj.getClass().getSimpleName();
             values = new ContentValues();
+            write = helperBD.getWritableDatabase();
+            read = helperBD.getReadableDatabase();
         }
 
         public boolean execute() {
-
             try {
-                SQLiteDatabase write = helperBD.getReadableDatabase();
                 Table persistable =
                         obj.getClass().getAnnotation(Table.class);
                 if (persistable != null) {
@@ -551,21 +557,24 @@ public class SimpleSQL {
                         if (column != null) {
                             if (!field.isAnnotationPresent(AutoIncrement.class) && field.get(obj) != null)
                                 checkObject(field, obj);
-                        } else
+                            if (field.get(obj) == null && column.non_null())
+                                throw new SQLException("This " + field.getName() + " is not null but is empty");
+                    } else
                             throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
                     }
-                    long result = write.insert(obj.getClass().getSimpleName(), null, values);
+                    long result = write.insert(table, null, values);
                     return result > -1;
                 } else
                     throw new SQLException("This class does not have the table annotation");
             } catch (SQLException e) {
+                Log.e("Insert", e.getMessage());
                 e.printStackTrace();
                 return false;
             } catch (Exception e) {
+                Log.e("Insert", e.getMessage());
                 e.printStackTrace();
                 return false;
             }
-
         }
 
         private void checkObject(Field field, Object obj) {
@@ -586,6 +595,16 @@ public class SimpleSQL {
                 e.printStackTrace();
             }
         }
+
+       /* private void getCount(String f) {
+            String sql = "SELECT IFNULL(MAX(" + f + "),0) + 1 AS id  FROM " + table + ";";
+            Cursor cursor = read.rawQuery(sql, null);
+            if (cursor.moveToFirst())
+                values.put(f, cursor.getInt(cursor.getColumnIndex("id")));
+            else
+                values.put(f, 1);
+        }*/
+
     }
 
 
@@ -597,7 +616,8 @@ public class SimpleSQL {
             annotations += " AUTOINCREMENT";
         if (not_null && !c.isAnnotationPresent(Key.class))
             annotations += " NOT NULL";
-
+        if (c.isAnnotationPresent(Unique.class))
+            annotations += " UNIQUE";
         return annotations;
     }
 

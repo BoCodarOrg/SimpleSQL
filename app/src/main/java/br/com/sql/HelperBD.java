@@ -16,7 +16,7 @@ import java.sql.SQLException;
  */
 public class HelperBD extends SQLiteOpenHelper {
     private static final String NAME = "nome_banco.bd";
-    private static final int VERSION = 14;
+    private static final int VERSION = 11;
     private SimpleSQL simpleSQL;
 
     public HelperBD(@Nullable Context context) {
