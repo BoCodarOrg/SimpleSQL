@@ -20,7 +20,7 @@ Agora vamos mostrar o passo a passo de como utilizar:
 <a href="">v1.0.22</a>  
 <a href="">v1.0.23</a>  
 <a href="">v1.0.24</a>  
-<a href="">v1.0.25</a>
+<a href="">v1.0.25</a>  
 <a href="">v1.0.26</a>  
 <a href="">v1.0.27</a>  
 ### Importando a lib para o projeto:
