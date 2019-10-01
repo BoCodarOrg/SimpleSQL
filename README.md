@@ -9,7 +9,20 @@ Agora vamos mostrar o passo a passo de como utilizar:
 <a href="">v1.0.13</a>  
 <a href="">v1.0.14</a>  
 <a href="">v1.0.15</a>  
-
+<a href="">v1.0.14</a>  
+<a href="">v1.0.15</a>  
+<a href="">v1.0.16</a>  
+<a href="">v1.0.17</a>  
+<a href="">v1.0.18</a>  
+<a href="">v1.0.19</a>  
+<a href="">v1.0.20</a>  
+<a href="">v1.0.21</a>  
+<a href="">v1.0.22</a>  
+<a href="">v1.0.23</a>  
+<a href="">v1.0.24</a>  
+<a href="">v1.0.25</a>
+<a href="">v1.0.26</a>  
+<a href="">v1.0.27</a>  
 ### Importando a lib para o projeto:
 ```groovy
 implementation 'com.github.p2jorg:simplesql:1.0.15'
