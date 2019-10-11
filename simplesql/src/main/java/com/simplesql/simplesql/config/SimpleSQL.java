@@ -351,7 +351,7 @@ public class SimpleSQL {
         private String tableName, field, writeSQL, column, table, stringSet;
         private String SQLString;
         private Object value;
-        private String[] values, fields;
+        private Object[] values, fields;
 
         /**
          * @param typeObject
@@ -379,7 +379,7 @@ public class SimpleSQL {
             return this;
         }
 
-        public Update values(String[] values) {
+        public Update values(Object[] values) {
             this.values = values;
             return this;
         }
@@ -460,10 +460,10 @@ public class SimpleSQL {
         public boolean execute() {
             SQLiteDatabase write = helperBD.getReadableDatabase();
             int i = 0;
-            for (String s : fields) {
+            for (Object s : fields) {
                 String replace = "%" + i;
 
-                SQLString = SQLString.replace(replace, (CharSequence) getString(values[i]));
+                SQLString = SQLString.replace(replace, (CharSequence) getString((String) values[i]));
                 i++;
             }
             SQLString = SQLString + ";";
