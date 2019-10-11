@@ -87,6 +87,7 @@ public class SimpleSQL {
         private static final String KEY_FUNCTION_PARAMETER = "%column";
         private static final String KEY_COLIMN_NAME_MAX = "value_function";
         private String type;
+
         /**
          * @param typeObject
          * @param type
@@ -104,7 +105,7 @@ public class SimpleSQL {
                     this.functionParameter = true;
                     break;
                 case "MAX":
-                    SQLString = "SELECT MAX(" + KEY_FUNCTION_PARAMETER + ") INTO "+KEY_COLIMN_NAME_MAX;
+                    SQLString = "SELECT MAX(" + KEY_FUNCTION_PARAMETER + ") INTO " + KEY_COLIMN_NAME_MAX;
                     this.functionParameter = true;
                     break;
                 case "MIN":
@@ -252,19 +253,19 @@ public class SimpleSQL {
             if (functionParameter) {
                 if (fields[0] == null || fields[0].equals(""))
                     columnFunction = "*";
-                    SQLString = SQLString.replace(fields[0],"").replace(KEY_FUNCTION_PARAMETER, (CharSequence) getString(fields[0]));
+                SQLString = SQLString.replace(fields[0], "").replace(KEY_FUNCTION_PARAMETER, (CharSequence) getString(fields[0]));
             }
             SQLString = SQLString + ";";
             List lstClasses = new ArrayList<>();
             Field[] fields = typeObject.getClass().getDeclaredFields();
             HashMap<String, Object> hashMap = new HashMap<>();
             try {
-                Cursor  cursor = read.rawQuery(SQLString, null);
-                if(type.equals("COUNT")){
+                Cursor cursor = read.rawQuery(SQLString, null);
+                if (type.equals("COUNT")) {
                     cursor.moveToFirst();
                     return cursor.getInt(0);
-                }else if(type.equals("MAX") || type.equals("MIN")){
-                    if(cursor !=null){
+                } else if (type.equals("MAX") || type.equals("MIN")) {
+                    if (cursor != null) {
                         cursor.moveToFirst();
                         while (!cursor.isAfterLast()) {
                             for (Field f : fields) {
@@ -421,6 +422,12 @@ public class SimpleSQL {
             return this;
         }
 
+        public Update fiedlByteArray(byte[] value) {
+            this.value = value;
+            SQLString = SQLString + value;
+            return this;
+        }
+
         public Update fieldLong(long value) {
             this.value = value;
             SQLString = SQLString + value;
@@ -473,13 +480,11 @@ public class SimpleSQL {
     }
 
     public Object getString(String string) {
-        String s = "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;a;b;c;d;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z;\\;\\*";
-        String[] arrays = s.split(";");
-        for (String array : arrays) {
-            if (string.contains(array)) {
-                return "\"" + string + "\"";
-            }
+
+        if (string.contains("[a-zA-Z]")) {
+            return "'" + string + "'";
         }
+
         return string;
     }
 
@@ -579,7 +584,7 @@ public class SimpleSQL {
                                 checkObject(field, obj);
                             if (field.get(obj) == null && column.non_null())
                                 throw new SQLException("This " + field.getName() + " is not null but is empty");
-                    } else
+                        } else
                             throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
                     }
                     long result = write.insert(table, null, values);
