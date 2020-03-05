@@ -16,7 +16,7 @@ import java.sql.SQLException;
  */
 public class HelperBD extends SQLiteOpenHelper {
     private static final String NAME = "nome_banco.bd";
-    private static final int VERSION = 11;
+    private static final int VERSION = 14;
     private SimpleSQL simpleSQL;
 
     public HelperBD(@Nullable Context context) {
@@ -26,12 +26,20 @@ public class HelperBD extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String _return = simpleSQL.create(new Pessoa(), db);
+        try {
+            simpleSQL.create(new Pessoa(), db);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        String _retorn = simpleSQL.deleteTable(new Pessoa(), db);
+        try {
+            simpleSQL.deleteTable(new Pessoa(), db);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         onCreate(db);
     }
 

@@ -2,6 +2,7 @@ package br.com.sql;
 
 import com.simplesql.simplesql.annotations.AutoIncrement;
 import com.simplesql.simplesql.annotations.Column;
+import com.simplesql.simplesql.annotations.ForeignKey;
 import com.simplesql.simplesql.annotations.Key;
 import com.simplesql.simplesql.annotations.Table;
 import com.simplesql.simplesql.annotations.Unique;
@@ -23,6 +24,10 @@ public class Pessoa {
     @Unique
     @Column(type = "TEXT",non_null = true)
     private String phone;
+
+    @Column(type = "TEXT")
+    @ForeignKey(table = Teste.class, column ="teste" )
+    private String teste;
 
     public int getId() {
         return id;
