@@ -1,11 +1,11 @@
 package br.com.sql;
 
-import com.simplesql.simplesql.annotations.AutoIncrement;
-import com.simplesql.simplesql.annotations.Column;
-import com.simplesql.simplesql.annotations.ForeignKey;
-import com.simplesql.simplesql.annotations.Key;
-import com.simplesql.simplesql.annotations.Table;
-import com.simplesql.simplesql.annotations.Unique;
+import com.simplesql.annotations.AutoIncrement;
+import com.simplesql.annotations.Column;
+import com.simplesql.annotations.ForeignKey;
+import com.simplesql.annotations.Key;
+import com.simplesql.annotations.Table;
+import com.simplesql.annotations.Unique;
 
 @Table
 public class Pessoa {

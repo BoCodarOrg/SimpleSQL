@@ -1,18 +1,18 @@
-package com.simplesql.simplesql.config;
+package com.simplesql.config;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.simplesql.simplesql.annotations.AutoIncrement;
-import com.simplesql.simplesql.annotations.Column;
-import com.simplesql.simplesql.annotations.ForeignKey;
-import com.simplesql.simplesql.annotations.Key;
-import com.simplesql.simplesql.annotations.Table;
-import com.simplesql.simplesql.annotations.Unique;
-import com.simplesql.simplesql.crud.DeleteColumn;
-import com.simplesql.simplesql.crud.Insert;
-import com.simplesql.simplesql.crud.Select;
-import com.simplesql.simplesql.crud.Update;
+import com.simplesql.annotations.AutoIncrement;
+import com.simplesql.annotations.Column;
+import com.simplesql.annotations.ForeignKey;
+import com.simplesql.annotations.Key;
+import com.simplesql.annotations.Table;
+import com.simplesql.annotations.Unique;
+import com.simplesql.crud.DeleteColumn;
+import com.simplesql.crud.Insert;
+import com.simplesql.crud.Select;
+import com.simplesql.crud.Update;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;

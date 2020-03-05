@@ -1,19 +1,17 @@
-package com.simplesql.simplesql.crud;
+package com.simplesql.crud;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.simplesql.simplesql.annotations.AutoIncrement;
-import com.simplesql.simplesql.annotations.Column;
-import com.simplesql.simplesql.annotations.Key;
-import com.simplesql.simplesql.annotations.Table;
-import com.simplesql.simplesql.annotations.Unique;
+import com.simplesql.annotations.AutoIncrement;
+import com.simplesql.annotations.Column;
+import com.simplesql.annotations.Table;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 
-import static com.simplesql.simplesql.config.SimpleSQL.helperBD;
+import static com.simplesql.config.SimpleSQL.helperBD;
 
 /**
  * @author Paulo Iury

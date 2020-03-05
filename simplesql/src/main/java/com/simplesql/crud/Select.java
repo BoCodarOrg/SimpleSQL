@@ -1,11 +1,10 @@
-package com.simplesql.simplesql.crud;
+package com.simplesql.crud;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 
 import com.google.gson.Gson;
-import com.simplesql.simplesql.config.SimpleSQL;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -14,8 +13,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.simplesql.simplesql.config.SimpleSQL.getString;
-import static com.simplesql.simplesql.config.SimpleSQL.helperBD;
+import static com.simplesql.config.SimpleSQL.getString;
+import static com.simplesql.config.SimpleSQL.helperBD;
 
 /**
  * @author Lucas Nascimento

@@ -1,9 +1,9 @@
-package com.simplesql.simplesql.crud;
+package com.simplesql.crud;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import static com.simplesql.simplesql.config.SimpleSQL.getString;
-import static com.simplesql.simplesql.config.SimpleSQL.helperBD;
+import static com.simplesql.config.SimpleSQL.getString;
+import static com.simplesql.config.SimpleSQL.helperBD;
 
 /**
  * @author Lucas Nascimento

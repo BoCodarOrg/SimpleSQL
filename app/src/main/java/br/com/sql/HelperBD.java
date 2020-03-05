@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-import com.simplesql.simplesql.config.SimpleSQL;
+import com.simplesql.config.SimpleSQL;
 
 import java.sql.SQLException;
 

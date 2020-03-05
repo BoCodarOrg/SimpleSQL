@@ -1,7 +1,7 @@
 package br.com.sql;
 
-import com.simplesql.simplesql.annotations.Column;
-import com.simplesql.simplesql.annotations.Table;
+import com.simplesql.annotations.Column;
+import com.simplesql.annotations.Table;
 
 @Table
 public class Teste {
