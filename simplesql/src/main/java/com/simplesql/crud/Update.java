@@ -16,7 +16,8 @@ public class Update {
     private StringBuilder SQLString = new StringBuilder();
 
     private Object value;
-    private Object[] values, fields;
+    private Object[] values;
+    private String[] fields;
 
     /**
      * @param typeObject
@@ -34,16 +35,6 @@ public class Update {
      */
     public Update set(String... fields) {
         this.fields = fields;
-        int i = 0;
-        StringBuilder stringSet = new StringBuilder();
-        for (String s : fields) {
-            stringSet.append(s)
-                    .append(" = %")
-                    .append(i)
-                    .append(",");
-            i++;
-        }
-        SQLString.append(" SET ").append(stringSet);
         return this;
     }
 
@@ -56,7 +47,18 @@ public class Update {
     }
 
     public Update where() {
-        SQLString.append(" WHERE ");
+        int i = 0;
+        StringBuilder stringSet = new StringBuilder();
+        for (String s : fields) {
+            if (i > 0) stringSet.append(",");
+            stringSet.append(s)
+                    .append(" = ")
+                    .append(values[i].getClass() == String.class ? "\"" + values[i] + "\"" : values[i]);
+            i++;
+        }
+        SQLString.append(" SET ")
+                .append(stringSet)
+                .append(" WHERE ");
         return this;
     }
 
@@ -123,17 +125,9 @@ public class Update {
         return this;
     }
 
-    public void execute() throws SQLException {
-        SQLiteDatabase write = helperBD.getReadableDatabase();
-        int i = 0;
-        for (Object s : fields) {
-            String replace = "%" + i;
-            String aux = SQLString.toString().replace(replace, (CharSequence) getString((String) values[i]));
-            SQLString = new StringBuilder(aux);
-            i++;
-        }
+    public void execute() {
+        SQLiteDatabase write = helperBD.getWritableDatabase();
         SQLString.append(";");
-
         write.execSQL(SQLString.toString());
     }
 }

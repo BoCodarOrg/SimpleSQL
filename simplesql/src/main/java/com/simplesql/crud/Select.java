@@ -24,7 +24,7 @@ public class Select {
     private String[] fields;
     private boolean where, equals, between, or, on, and, like, innerJoin, leftJoin, rightJoin, fullJoin, functionParameter;
     private Object value;
-    private StringBuilder SQLString;
+    private StringBuilder SQLString = new StringBuilder();
     private Object typeObject;
     private static final String KEY_FUNCTION_PARAMETER = "%column";
     private static final String KEY_COLIMN_NAME_MAX = "value_function";
