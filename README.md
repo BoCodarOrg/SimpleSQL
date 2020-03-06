@@ -6,7 +6,7 @@ Agora vamos mostrar o passo a passo de como utilizar:
 
 ### Importando a lib para o projeto:
 ```groovy
-implementation 'com.github.p2jorg:simplesql:1.0.29'
+implementation 'com.github.p2jorg:simplesql:1.0.30'
 ```
 ##### *Observação - Caso você não tenha o JitPack, adicione em seu module project a linha de código com o comentário:
 ```groovy
@@ -72,23 +72,21 @@ O Processo inicial de criar um banco de dados continua o mesmo, porém, como já
 public class HelperBD extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "example.db";
-    Context context;
     private SimpleSQL simpleSQL;
 
     public HelperBD(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context;
 	simpleSQL = new SimpleSQL(this);
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String _return = simpleSQL.create(new Pessoa(),db);
+        simpleSQL.create(new Pessoa(),db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        String _return = simpleSQL.deleteTable(new Pessoa(),db);
+        simpleSQL.deleteTable(new Pessoa(),db);
         onCreate(db);
     }
 
@@ -123,7 +121,7 @@ Para fazer uma listagem dos registro do banco de dados é bem simples, é só cr
 SimpleSQL simpleSql = new SimpleSQL(new HelperBD(this));
  
 List<Pessoa> list = simpleSQL.selectTable(new Pessoa())
-			    .fields(new String[]{"*"})
+			    .fields("*")
 			    .where()
 			    .column("id")
 			    .equals()
@@ -147,8 +145,8 @@ Ainda utilizando o mesmo padrão dos anteriores você também pode atualizar os 
 ```JAVA
 SimpleSQL simpleSql = new SimpleSQL(new HelperBD(this));
 boolean result = simpleSQL.updateTable(new Pessoa())
-                    	.set(new String[]{"nome","idade"})
-                    	.values(new String[]{"Novo Nome","Nova Idade"})
+                    	.set("nome","idade")
+                    	.values("Novo Nome","Nova Idade")
                     	.where()
                     	.column("id")
                     	.equals()
