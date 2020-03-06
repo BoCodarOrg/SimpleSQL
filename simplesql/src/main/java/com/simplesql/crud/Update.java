@@ -43,10 +43,6 @@ public class Update {
      */
     public Update values(Object... values) {
         this.values = values;
-        return this;
-    }
-
-    public Update where() {
         int i = 0;
         StringBuilder stringSet = new StringBuilder();
         for (String s : fields) {
@@ -57,8 +53,12 @@ public class Update {
             i++;
         }
         SQLString.append(" SET ")
-                .append(stringSet)
-                .append(" WHERE ");
+                .append(stringSet);
+        return this;
+    }
+
+    public Update where() {
+        SQLString.append(" WHERE ");
         return this;
     }
 
