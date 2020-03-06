@@ -1,5 +1,6 @@
 package com.simplesql.crud;
 
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import static com.simplesql.config.SimpleSQL.getString;
@@ -11,8 +12,9 @@ import static com.simplesql.config.SimpleSQL.helperBD;
  */
 public class Update {
     private Object typeObject;
-    private String tableName, field, writeSQL, column, table, stringSet;
-    private String SQLString;
+    private String tableName, field, writeSQL, column, table;
+    private StringBuilder SQLString = new StringBuilder();
+
     private Object value;
     private Object[] values, fields;
 
@@ -22,120 +24,117 @@ public class Update {
     public Update(Object typeObject) {
         this.tableName = typeObject.getClass().getSimpleName();
         this.typeObject = typeObject;
-        SQLString = "UPDATE " + tableName;
+//        SQLString = new StringBuilder();
+        SQLString.append("UPDATE ")
+                .append(tableName);
     }
 
     /**
      * @param fields to be changed
      */
-    public Update set(String[] fields) {
+    public Update set(String... fields) {
         this.fields = fields;
-        stringSet = "";
         int i = 0;
+        StringBuilder stringSet = new StringBuilder();
         for (String s : fields) {
-            stringSet += s + " = %" + i + ",";
+            stringSet.append(s)
+                    .append(" = %")
+                    .append(i)
+                    .append(",");
             i++;
         }
-        stringSet = stringSet.substring(0, stringSet.length() - 1);
-        SQLString = SQLString + " SET " + stringSet;
+        SQLString.append(" SET ").append(stringSet);
         return this;
     }
 
     /**
      * @param values new values ​​to be changed for fields
      */
-    public Update values(Object[] values) {
+    public Update values(Object... values) {
         this.values = values;
         return this;
     }
 
     public Update where() {
-        SQLString = SQLString + " WHERE ";
+        SQLString.append(" WHERE ");
         return this;
     }
 
     public Update equals() {
-        SQLString = SQLString + " = ";
+        SQLString.append(" = ");
         return this;
     }
 
     public Update or() {
-        SQLString = SQLString + " OR ";
+        SQLString.append(" OR ");
         return this;
     }
 
     public Update and() {
-        SQLString = SQLString + " AND ";
+        SQLString.append(" AND ");
         return this;
     }
 
     public Update column(String name) {
         this.column = name;
-        SQLString = SQLString + " " + name + " ";
+        SQLString.append(' ').append(name).append(' ');
         return this;
     }
 
     public Update fieldString(String value) {
         this.field = field;
-        SQLString = SQLString + "\"" + value + "\"";
+        SQLString.append("\"").append(value).append("\"");
         return this;
     }
 
     public Update fieldInt(int value) {
         this.value = value;
-        SQLString = SQLString + value;
+        SQLString.append(value);
         return this;
     }
 
     public Update fiedlByteArray(byte[] value) {
         this.value = value;
-        SQLString = SQLString + value;
+        SQLString.append(value);
         return this;
     }
 
     public Update fieldLong(long value) {
         this.value = value;
-        SQLString = SQLString + value;
+        SQLString.append(value);
         return this;
     }
 
     public Update fieldFloat(float value) {
         this.value = value;
-        SQLString = SQLString + value;
-
+        SQLString.append(value);
         return this;
     }
 
     public Update fieldBoolean(boolean value) {
         this.value = value;
-        SQLString = SQLString + value;
-
+        SQLString.append(value);
         return this;
     }
 
     public Update writeSQL(String operator) {
         this.writeSQL = operator;
-        SQLString = SQLString + " " + operator + " ";
+        SQLString.append(' ').append(operator).append(' ');
         return this;
     }
 
-    public boolean execute() {
+    public void execute() throws SQLException {
         SQLiteDatabase write = helperBD.getReadableDatabase();
         int i = 0;
         for (Object s : fields) {
             String replace = "%" + i;
-
-            SQLString = SQLString.replace(replace, (CharSequence) getString((String) values[i]));
+            String aux = SQLString.toString().replace(replace, (CharSequence) getString((String) values[i]));
+            SQLString = new StringBuilder(aux);
             i++;
         }
-        SQLString = SQLString + ";";
-        try {
-            write.execSQL(SQLString);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        SQLString.append(";");
+
+        write.execSQL(SQLString.toString());
     }
 }
 

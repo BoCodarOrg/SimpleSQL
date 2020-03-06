@@ -9,77 +9,82 @@ import static com.simplesql.config.SimpleSQL.helperBD;
  * Method DELETE COLUMN
  */
 public class DeleteColumn {
-    private String table, SQLString;
+    private StringBuilder SQLString = new StringBuilder();
 
     public DeleteColumn(Object objectType) {
-        this.table = objectType.getClass().getSimpleName();
-        this.SQLString = "DELETE FROM " + table;
+        this.SQLString.append("DELETE FROM ")
+                .append(objectType.getClass().getSimpleName()); //Name table
     }
 
     public DeleteColumn equals() {
-        SQLString += " = ";
+        SQLString.append(" = ");
         return this;
     }
 
     public DeleteColumn where() {
-        SQLString += " WHERE ";
+        SQLString.append(" WHERE ");
         return this;
     }
 
     public DeleteColumn and() {
-        SQLString += " AND ";
+        SQLString.append(" AND ");
         return this;
     }
 
     public DeleteColumn or() {
-        SQLString += " OR ";
+        SQLString.append(" OR ");
         return this;
     }
 
     public DeleteColumn like(String s) {
-        SQLString += "LIKE " + "\"s\"";
+        SQLString.append("LIKE ")
+                .append("\"")
+                .append(s)
+                .append("\"");
         return this;
     }
 
     public DeleteColumn fieldString(String value) {
-        SQLString += "\"" + value + "\"";
+        SQLString.append("\"")
+                .append(value)
+                .append("\"");
         return this;
     }
 
     public DeleteColumn fieldInt(int value) {
-        SQLString += value;
+        SQLString.append(value);
         return this;
     }
 
     public DeleteColumn fieldLong(long value) {
-        SQLString += value;
+        SQLString.append(value);
         return this;
     }
 
     public DeleteColumn fieldFloat(float value) {
-        SQLString += value;
+        SQLString.append(value);
         return this;
     }
 
     public DeleteColumn fieldBoolean(boolean value) {
-        SQLString += value;
+        SQLString.append(value);
         return this;
     }
 
     public DeleteColumn column(String field) {
-        SQLString += field;
+        SQLString.append(field);
         return this;
     }
 
     public DeleteColumn writeSQL(String sql) {
-        SQLString += sql;
+        SQLString.append(sql);
         return this;
     }
 
     public boolean execute() {
         SQLiteDatabase write = helperBD.getWritableDatabase();
         try {
-            write.execSQL(SQLString);
+            write.execSQL(SQLString.toString());
             return true;
         } catch (Exception e) {
             return false;

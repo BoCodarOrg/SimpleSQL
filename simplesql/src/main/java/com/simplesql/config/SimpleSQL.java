@@ -78,28 +78,34 @@ public class SimpleSQL {
      */
     public void create(Object obj, SQLiteDatabase db) throws SQLException {
         if (obj.getClass().getAnnotation(Table.class) != null) {
-            String columns = "";
+            StringBuilder columns = new StringBuilder();
+            StringBuilder foreignKeys = new StringBuilder();
             String tabela = obj.getClass().getSimpleName();
             Field[] fields = obj.getClass().getDeclaredFields();
-            String foreignKeys = "";
-            int count = 0;
             for (Field field : fields) {
                 field.setAccessible(true); // As the attributes are private, we set it to visible
                 Column column =
                         field.getAnnotation(Column.class);
                 if (column != null) {
-                    if (count > 0)
-                        columns += " , ";
-                    columns += field.getName() + " " + column.type().toUpperCase();
-                    columns += checkAnnotations(field, column.non_null());
+                    if (field != fields[0])
+                        columns.append(" , ");
+                    columns.append(field.getName())
+                            .append(' ')
+                            .append(column.type().toUpperCase())
+                            .append(checkAnnotations(field, column.non_null()));
                     if (field.isAnnotationPresent(ForeignKey.class)) {
                         ForeignKey foreignKey = field.getAnnotation(ForeignKey.class);
-                        foreignKeys += " , FOREIGN KEY (" + field.getName() + ")" +
-                                " REFERENCES " + foreignKey.table().getSimpleName() + "(" + foreignKey.column() + ")";
+                        foreignKeys.append(" , FOREIGN KEY (")
+                                .append(field.getName())
+                                .append(")")
+                                .append(" REFERENCES ")
+                                .append(foreignKey.table().getSimpleName())
+                                .append("(")
+                                .append(foreignKey.column())
+                                .append(")");
                     }
                 } else
                     throw new SQLException("The " + field.getName() + "attribute did not have the column annotation");
-                count++;
             }
             db.execSQL("CREATE TABLE " + tabela + " ( " + columns + foreignKeys + ");");
         } else
@@ -113,16 +119,16 @@ public class SimpleSQL {
      */
 
     private String checkAnnotations(Field field, boolean not_null) {
-        String annotations = "";
+        StringBuilder annotations = new StringBuilder();
         if (field.isAnnotationPresent(Key.class))
-            annotations += " PRIMARY KEY";
+            annotations.append(" PRIMARY KEY");
         if (field.isAnnotationPresent(AutoIncrement.class))
-            annotations += " AUTOINCREMENT";
+            annotations.append(" AUTOINCREMENT");
         if (not_null && !field.isAnnotationPresent(Key.class))
-            annotations += " NOT NULL";
+            annotations.append(" NOT NULL");
         if (field.isAnnotationPresent(Unique.class))
-            annotations += " UNIQUE";
-        return annotations;
+            annotations.append(" UNIQUE");
+        return annotations.toString();
     }
 
 

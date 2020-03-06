@@ -25,10 +25,6 @@ public class Pessoa {
     @Column(type = "TEXT",non_null = true)
     private String phone;
 
-    @Column(type = "TEXT")
-    @ForeignKey(table = Teste.class, column ="teste" )
-    private String teste;
-
     public int getId() {
         return id;
     }

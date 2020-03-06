@@ -17,12 +17,23 @@ public class Example extends AppCompatActivity {
         SimpleSQL simpleSQL = new SimpleSQL(new HelperBD(this));
         Pessoa pessoa = new Pessoa();
         pessoa.setName("paulo");
-        pessoa.setEmail("pauloiury1@gmail.com");
-        pessoa.setPhone("1231789201");
+        pessoa.setEmail("pauloury1@gmail.com");
+        pessoa.setPhone("12317820");
         boolean result = simpleSQL.insert(pessoa).execute();
 
-        List<Pessoa> list = (List<Pessoa>) simpleSQL.selectTable(new Pessoa())
-                .fields(new String[]{"*"})
+        List<Pessoa> list = simpleSQL.selectTable(new Pessoa())
+                .fields("*")
                 .execute();
+
+       simpleSQL.updateTable(new Pessoa())
+                .set("name","email")
+                .values("Novo Nome","Novo Email")
+                .where()
+                .column("id")
+                .equals()
+                .fieldInt(1)
+                .execute();
+
+        list.clear();
     }
 }
